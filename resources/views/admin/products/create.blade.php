@@ -3,9 +3,10 @@
 @section('title', 'Add New Product')
 
 @section('content')
+@php $routePrefix = auth()->user()->isAdmin() ? 'admin' : 'officer'; @endphp
 <div class="mb-6">
     <div class="flex items-center gap-2 text-gray-400 text-sm mb-4">
-        <a href="{{ route('admin.products') }}" class="hover:text-black transition-colors font-bold">Product</a>
+        <a href="{{ route($routePrefix . '.products') }}" class="hover:text-black transition-colors font-bold">Product</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-black font-bold">Add New Product</span>
     </div>
@@ -13,7 +14,7 @@
     <p class="page-subtitle">Fill in the information below to add a new product to your catalog</p>
 </div>
 
-<form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" style="max-width: 900px;">
+<form action="{{ route($routePrefix . '.products.store') }}" method="POST" enctype="multipart/form-data" style="max-width: 900px;">
     @csrf
     <div style="background-color: #fff; border: 1px solid #000; border-radius: 12px; padding: 40px; margin-top: 20px;">
         <div class="space-y-8">
@@ -91,7 +92,7 @@
                 <button type="submit" style="background-color: #00D1FF; color: #fff; border: none; padding: 15px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; flex-grow: 1; transition: background-color 0.3s;">
                     Save Product
                 </button>
-                <a href="{{ route('admin.products') }}" style="background-color: #f0f0f0; color: #333; text-decoration: none; padding: 15px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; text-align: center; flex-grow: 1; transition: background-color 0.3s;">
+                <a href="{{ route($routePrefix . '.products') }}" style="background-color: #f0f0f0; color: #333; text-decoration: none; padding: 15px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; text-align: center; flex-grow: 1; transition: background-color 0.3s;">
                     Cancel
                 </a>
             </div>

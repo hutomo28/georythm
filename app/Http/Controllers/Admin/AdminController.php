@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     /**
+     * Get the route prefix based on the current user's role.
+     */
+    private function routePrefix(): string
+    {
+        return auth()->user()->isAdmin() ? 'admin' : 'officer';
+    }
+
+    /**
      * Display the admin dashboard.
      */
     public function index()
@@ -53,7 +61,7 @@ class AdminController extends Controller
             }
         }
 
-        return redirect()->route('admin.products')->with('success', 'Product added successfully with ' . count($request->file('images')) . ' images!');
+        return redirect()->route($this->routePrefix() . '.products')->with('success', 'Product added successfully with ' . count($request->file('images')) . ' images!');
     }
 
     /**
@@ -62,7 +70,7 @@ class AdminController extends Controller
     public function destroy($id)
     {
         // Simple simulation of deletion
-        return redirect()->route('admin.products')->with('delete_success', 'Delete Product Success');
+        return redirect()->route($this->routePrefix() . '.products')->with('delete_success', 'Delete Product Success');
     }
 
     /**
@@ -78,7 +86,7 @@ class AdminController extends Controller
             'stock' => 'required|integer',
         ]);
 
-        return redirect()->route('admin.products')->with('update_success', 'Update Product Success');
+        return redirect()->route($this->routePrefix() . '.products')->with('update_success', 'Update Product Success');
     }
 
     /**

@@ -3,13 +3,14 @@
 @section('title', 'Product')
 
 @section('content')
+@php $routePrefix = auth()->user()->isAdmin() ? 'admin' : 'officer'; @endphp
 <div class="mb-4" style="display: flex; justify-content: space-between; align-items: flex-end;">
     <div>
         <h2 class="page-title" style="margin-bottom: 5px;">Product</h2>
         <p class="page-subtitle" style="margin-bottom: 0;">Manage your product catalog, inventory, and categories</p>
     </div>
     @if(auth()->user()->isAdmin())
-    <a href="{{ route('admin.products.create') }}" style="background-color: #00D1FF; color: #fff; border: 1px solid #000; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 4px 4px 0px #000;">
+    <a href="{{ route($routePrefix . '.products.create') }}" style="background-color: #00D1FF; color: #fff; border: 1px solid #000; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 4px 4px 0px #000;">
         <i class="fa-solid fa-plus"></i> Add new Product
     </a>
     @endif

@@ -157,27 +157,31 @@
     </style>
 </head>
 <body>
+    @php
+        $routePrefix = auth()->user()->isAdmin() ? 'admin' : 'officer';
+        $pageTitle = auth()->user()->isAdmin() ? 'Admin Page' : 'Officer Page';
+    @endphp
     <div class="sidebar">
-        <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 60px;">Admin Page</h1>
+        <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 60px;">{{ $pageTitle }}</h1>
         <ul class="nav-links">
             <li class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <a href="{{ route($routePrefix . '.dashboard') }}" class="nav-link {{ request()->routeIs('*.dashboard') ? 'active' : '' }}">
                     <i class="fa-solid fa-table-cells-large"></i> Dashboard
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('admin.products') }}" class="nav-link {{ request()->routeIs('admin.products') ? 'active' : '' }}">
+                <a href="{{ route($routePrefix . '.products') }}" class="nav-link {{ request()->routeIs('*.products') ? 'active' : '' }}">
                     <i class="fa-solid fa-box"></i> Product
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('admin.orders') }}" class="nav-link {{ request()->routeIs('admin.orders') ? 'active' : '' }}">
+                <a href="{{ route($routePrefix . '.orders') }}" class="nav-link {{ request()->routeIs('*.orders') ? 'active' : '' }}">
                     <i class="fa-solid fa-clipboard-list"></i> Order
                 </a>
             </li>
             @if(auth()->user()->isAdmin())
             <li class="nav-item">
-                <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                <a href="{{ route($routePrefix . '.users') }}" class="nav-link {{ request()->routeIs('*.users') ? 'active' : '' }}">
                     <i class="fa-solid fa-users"></i> Users
                 </a>
             </li>
@@ -197,7 +201,7 @@
                 <span class="geo" style="color: #000;">GEO</span><span class="rythm" style="color: #FFEA00;">RYTHM</span>
             </div>
             <div class="admin-profile">
-                <span style="font-style: italic; font-weight: 400;">Admin:</span>Bagoes
+                <span style="font-style: italic; font-weight: 400;">{{ ucfirst(auth()->user()->role) }}:</span>{{ auth()->user()->name }}
             </div>
         </div>
 

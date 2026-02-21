@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Customer\AccountController;
 
 // Guest routes
 Route::middleware('guest')->group(function () {
@@ -17,8 +18,11 @@ Route::post('/logout', [LoginController::class , 'logout'])->name('logout')->mid
 
 Route::get('/', function () {
     if (auth()->check()) {
-        if (auth()->user()->isAdmin() || auth()->user()->isOfficer()) {
+        if (auth()->user()->isAdmin()) {
             return redirect()->route('admin.dashboard');
+        }
+        if (auth()->user()->isOfficer()) {
+            return redirect()->route('officer.dashboard');
         }
         return redirect()->route('customer.welcome');
     }
@@ -42,20 +46,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
         }
         )->name('checkout.index');
 
-        Route::get('/account', function () {
-            return view('customer.account.index');
-        }
-        )->name('account.index');
-
-        Route::get('/account/address/create', function () {
-            return view('customer.account.address.create');
-        }
-        )->name('address.create');
-
-        Route::post('/account/address', function () {
-            return redirect()->route('account.index')->with('success', ' Berhasil menambahkan alamat baru');
-        }
-        )->name('address.store');
+        Route::get('/account', [AccountController::class, 'index'])->name('account.index');
+        Route::get('/account/address/create', [AccountController::class, 'createAddress'])->name('address.create');
+        Route::post('/account/address', [AccountController::class, 'storeAddress'])->name('address.store');
 
         Route::get('/order-status', function () {
             return view('customer.order.status');
@@ -67,8 +60,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
         }
         )->name('products.index');    });
 
-// Admin & Officer routes
-Route::middleware(['auth', 'role:admin,officer'])->prefix('admin')->group(function () {
+// Admin routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class , 'index'])->name('admin.dashboard');
     Route::get('/products', [AdminController::class , 'products'])->name('admin.products');
     Route::get('/products/create', [AdminController::class , 'create'])->name('admin.products.create');
@@ -77,4 +70,16 @@ Route::middleware(['auth', 'role:admin,officer'])->prefix('admin')->group(functi
     Route::put('/products/{id}', [AdminController::class , 'update'])->name('admin.products.update');
     Route::get('/orders', [AdminController::class , 'orders'])->name('admin.orders');
     Route::get('/users', [AdminController::class , 'users'])->name('admin.users');
+});
+
+// Officer routes
+Route::middleware(['auth', 'role:officer'])->prefix('officer')->group(function () {
+    Route::get('/dashboard', [AdminController::class , 'index'])->name('officer.dashboard');
+    Route::get('/products', [AdminController::class , 'products'])->name('officer.products');
+    Route::get('/products/create', [AdminController::class , 'create'])->name('officer.products.create');
+    Route::post('/products', [AdminController::class , 'store'])->name('officer.products.store');
+    Route::delete('/products/{id}', [AdminController::class , 'destroy'])->name('officer.products.destroy');
+    Route::put('/products/{id}', [AdminController::class , 'update'])->name('officer.products.update');
+    Route::get('/orders', [AdminController::class , 'orders'])->name('officer.orders');
+    Route::get('/users', [AdminController::class , 'users'])->name('officer.users');
 });

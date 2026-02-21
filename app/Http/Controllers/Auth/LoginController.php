@@ -30,8 +30,12 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            if (Auth::user()->isAdmin() || Auth::user()->isOfficer()) {
+            if (Auth::user()->isAdmin()) {
                 return redirect()->route('admin.dashboard');
+            }
+
+            if (Auth::user()->isOfficer()) {
+                return redirect()->route('officer.dashboard');
             }
 
             return redirect()->route('customer.welcome');
