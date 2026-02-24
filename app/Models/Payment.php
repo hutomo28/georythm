@@ -12,7 +12,8 @@ class Payment extends Model
         'method',
         'amount',
         'status',
-        'proof',
+        'proof_image',
+        'sender_name',
         'paid_at',
     ];
 

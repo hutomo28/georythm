@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -150,14 +150,14 @@
             </div>
 
             <div class="form-group">
-                <input type="password" name="password" placeholder="Password" required>
+                <input type="password" name="password" placeholder="Password" required minlength="8">
                 @error('password')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>
 
             <div class="footer-links">
-                <p>you have account? <a href="{{ route('login') }}">Login here</a></p>
+                <p>Already have an account? <a href="{{ route('login') }}">Login here</a></p>
                 <button type="submit" class="create-btn">Create</button>
             </div>
         </form>

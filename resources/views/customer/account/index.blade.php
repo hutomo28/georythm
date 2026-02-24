@@ -27,54 +27,82 @@
 
             @if(request('received'))
                 <div class="mb-8 p-4 bg-green-50 border border-green-200 text-green-800 font-bold uppercase tracking-widest text-sm text-center">
-                    Pesanan Berhasil Diterima dan Masuk ke Riwayat
+                    Order Successfully Received and Added to History
                 </div>
             @endif
 
             <div class="space-y-4 mb-8">
                 <p class="text-xl text-gray-900">
-                    <span class="font-bold italic">Hallo,</span> {{ $user->name }}
+                    <span class="font-bold italic">Hello,</span> {{ $user->name }}
                 </p>
                 <p class="text-xl text-gray-900">
-                    <span class="font-bold italic">Email Kamu,</span> {{ $user->email }}
+                    <span class="font-bold italic">Your Email,</span> {{ $user->email }}
                 </p>
             </div>
 
             <!-- Address Card -->
-            <div class="border border-black p-6 relative min-h-[250px] flex flex-col">
+            <div class="border border-black p-6 relative flex flex-col">
                 <div class="flex justify-between items-start mb-6">
-                    <h3 class="text-xl font-bold text-gray-900">Alamat Kamu</h3>
+                    <h3 class="text-xl font-bold text-gray-900">Your Addresses</h3>
                     <a href="{{ route('address.create') }}" class="bg-black text-white text-[10px] uppercase font-bold px-3 py-1.5 hover:bg-gray-800 transition-colors inline-block">
-                        Buat Alamat Baru
+                        Create New Address
                     </a>
                 </div>
 
-                @if($address)
-                    <div class="border border-gray-300 p-4 flex-1">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="font-bold text-sm">{{ $address->country }}</span>
-                            <span class="font-bold text-sm">{{ $address->full_name }}</span>
+                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                    @forelse($addresses as $addr)
+                        <div class="border {{ $addr->is_default ? 'border-black bg-gray-50' : 'border-gray-200' }} p-4 relative group">
+                            @if($addr->is_default)
+                                <div class="absolute -top-3 left-4 bg-black text-white text-[8px] px-2 py-0.5 font-bold uppercase tracking-widest">
+                                    Main Address
+                                </div>
+                            @endif
+
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-sm">{{ $addr->country }}</span>
+                                <span class="font-bold text-sm">{{ $addr->full_name }}</span>
+                            </div>
+                            <div class="text-right text-xs text-gray-500 mb-2">Phone No. {{ $addr->phone }}</div>
+                            <div class="text-xs text-gray-600 space-y-1 mb-4">
+                                <p>{{ $addr->address }}</p>
+                                <p><span class="inline-block w-20">{{ $addr->apartment ?? '-' }}</span> Province: {{ $addr->province }}</p>
+                                <p><span class="inline-block w-20">City: {{ $addr->city }}</span> Zip Code: {{ $addr->zip }}</p>
+                            </div>
+
+                            <div class="flex space-x-2 pt-2 border-t border-gray-100 mt-2">
+                                @if(!$addr->is_default)
+                                    <form action="{{ route('address.set-main', $addr) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="text-[9px] font-bold uppercase tracking-widest text-black hover:underline">
+                                            Set as Main
+                                        </button>
+                                    </form>
+                                @endif
+                                
+                                <form action="{{ route('address.destroy', $addr) }}" method="POST" onsubmit="return confirm('Delete this address?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-[9px] font-bold uppercase tracking-widest text-red-600 hover:underline">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="text-right text-xs text-gray-500 mb-2">No Telp.{{ $address->phone }}</div>
-                        <div class="text-xs text-gray-600 space-y-1">
-                            <p>{{ $address->address }}</p>
-                            <p><span class="inline-block w-20">{{ $address->apartment ?? '-' }}</span> Prov: {{ $address->province }}</p>
-                            <p><span class="inline-block w-20">Kota: {{ $address->city }}</span> Kode Pos: {{ $address->zip }}</p>
+                    @empty
+                        <div class="border border-gray-300 p-8 flex items-center justify-center">
+                            <p class="text-gray-400 text-sm">No addresses yet. Please add a new address.</p>
                         </div>
-                    </div>
-                @else
-                    <div class="border border-gray-300 p-4 flex-1 flex items-center justify-center">
-                        <p class="text-gray-400 text-sm">Belum ada alamat. Silakan tambahkan alamat baru.</p>
-                    </div>
-                @endif
+                    @endforelse
+                </div>
             </div>
 
             <!-- Logout Button -->
             <div class="mt-8">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" onclick="return confirm('Apakah Anda ingin log out?');" class="w-full bg-black text-white py-4 px-6 font-bold uppercase tracking-widest hover:bg-gray-800 transition-all flex items-center justify-center group">
-                        <span>Keluar Akun</span>
+                    <button type="submit" onclick="return confirm('Are you sure you want to log out?');" class="w-full bg-black text-white py-4 px-6 font-bold uppercase tracking-widest hover:bg-gray-800 transition-all flex items-center justify-center group">
+                        <span>Log Out</span>
                         <svg class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
@@ -87,42 +115,42 @@
         <div class="lg:col-span-7">
             <!-- Order Status -->
             <div class="mb-16">
-                <h2 class="text-2xl font-normal text-gray-900 mb-8">Status Pemesanan</h2>
+                <h2 class="text-2xl font-normal text-gray-900 mb-8">Order Status</h2>
                 <div class="flex justify-between items-start max-w-2xl">
                     <!-- Status 1 -->
-                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'menunggu-pembayaran']) }}'">
+                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'waiting-payment']) }}'">
                         <div class="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center mb-3 mx-auto transition-colors group-hover:bg-black group-hover:text-white">
-                            <span class="text-3xl font-bold">{{ $statusCounts['menunggu-pembayaran'] }}</span>
+                            <span class="text-3xl font-bold">{{ $statusCounts['waiting-payment'] }}</span>
                         </div>
-                        <p class="text-sm font-bold text-gray-900 leading-tight">Menunggu<br>Pembayaran</p>
+                        <p class="text-sm font-bold text-gray-900 leading-tight">Waiting for<br>Payment</p>
                     </button>
                     <!-- Status 2 -->
-                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'sedang-dikemas']) }}'">
+                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'processing']) }}'">
                         <div class="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center mb-3 mx-auto transition-colors group-hover:bg-black group-hover:text-white">
-                            <span class="text-3xl font-bold">{{ $statusCounts['sedang-dikemas'] }}</span>
+                            <span class="text-3xl font-bold">{{ $statusCounts['processing'] }}</span>
                         </div>
-                        <p class="text-sm font-bold text-gray-900 leading-tight">Sedang<br>Dikemas</p>
+                        <p class="text-sm font-bold text-gray-900 leading-tight">Processing</p>
                     </button>
                     <!-- Status 3 -->
-                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'sedang-dikirim']) }}'">
+                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'shipped']) }}'">
                         <div class="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center mb-3 mx-auto transition-colors group-hover:bg-black group-hover:text-white">
-                            <span class="text-3xl font-bold">{{ $statusCounts['sedang-dikirim'] }}</span>
+                            <span class="text-3xl font-bold">{{ $statusCounts['shipped'] }}</span>
                         </div>
-                        <p class="text-sm font-bold text-gray-900 leading-tight">Sedang<br>Dikirim</p>
+                        <p class="text-sm font-bold text-gray-900 leading-tight">Shipping</p>
                     </button>
                     <!-- Status 4 -->
-                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'pesanan-tiba']) }}'">
+                    <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'arrived']) }}'">
                         <div class="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center mb-3 mx-auto transition-colors group-hover:bg-black group-hover:text-white">
-                            <span class="text-3xl font-bold">{{ $statusCounts['pesanan-tiba'] }}</span>
+                            <span class="text-3xl font-bold">{{ $statusCounts['arrived'] }}</span>
                         </div>
-                        <p class="text-sm font-bold text-gray-900 leading-tight">Pesanan<br>Tiba</p>
+                        <p class="text-sm font-bold text-gray-900 leading-tight">Order<br>Arrived</p>
                     </button>
                 </div>
             </div>
 
             <!-- Order History -->
             <div>
-                <h2 class="text-2xl font-normal text-gray-900 mb-6">Riwayat Pemesanan</h2>
+                <h2 class="text-2xl font-normal text-gray-900 mb-6">Order History</h2>
                 <div class="border-t border-black">
                     @forelse($completedOrders as $order)
                         @foreach($order->items as $item)
@@ -159,7 +187,7 @@
                         @endforeach
                     @empty
                         <div class="py-12 text-center">
-                            <p class="text-gray-400 text-sm">Belum ada riwayat pemesanan.</p>
+                            <p class="text-gray-400 text-sm">No order history yet.</p>
                         </div>
                     @endforelse
                 </div>

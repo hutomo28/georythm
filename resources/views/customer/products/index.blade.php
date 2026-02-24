@@ -17,17 +17,24 @@
 
     <!-- Product Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-16">
-        @foreach ($products as $product)
+        @forelse ($products as $product)
             <a href="{{ route('products.show', $product['id']) }}" class="group cursor-pointer block">
                 <!-- Image -->
                 <div class="aspect-[3/4] bg-gray-50 mb-6 overflow-hidden relative">
                     <img 
                         src="{{ $product['image'] }}" 
                         alt="{{ $product['name'] }}" 
-                        class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                        class="w-full h-full object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out @if($product['image2']) group-hover:opacity-0 @endif"
                         loading="lazy"
                     >
-                    <!-- Optional: Add badges or quick view overlay here -->
+                    @if($product['image2'])
+                        <img 
+                            src="{{ $product['image2'] }}" 
+                            alt="{{ $product['name'] }}" 
+                            class="absolute inset-0 w-full h-full object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
+                            loading="lazy"
+                        >
+                    @endif
                 </div>
                 
                 <!-- Content -->
@@ -43,7 +50,11 @@
                     </p>
                 </div>
             </a>
-        @endforeach
+        @empty
+            <div class="col-span-full py-20 text-center">
+                <p class="text-gray-400 uppercase tracking-widest text-sm">No products found in this category.</p>
+            </div>
+        @endforelse
     </div>
     
     <!-- Pagination (Placeholder) -->

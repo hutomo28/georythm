@@ -10,205 +10,140 @@
             <!-- User Info -->
             <div class="mb-8 p-4 border border-gray-200 rounded-lg flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <div class="h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">B</div>
+                    <div class="h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold uppercase">
+                        {{ substr($user->name, 0, 1) }}
+                    </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-900">bagoeshutomo@gmail.com</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $user->email }}</p>
                     </div>
                 </div>
-                <button class="text-gray-400 hover:text-gray-500">
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                </button>
             </div>
 
             <!-- Address Section -->
             <div class="mb-10">
-                <h2 class="text-lg font-bold text-gray-900 mb-4">Alamat Pengiriman</h2>
-                <div class="border border-black p-6 relative">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="font-bold text-sm">Indonesia</span>
-                        <span class="font-bold text-sm">Bagoes Hutomo</span>
+                <h2 class="text-xl font-bold text-gray-900 mb-6 uppercase tracking-tight">Shipping Address</h2>
+                @if($address)
+                    <div class="border border-black p-6 relative bg-gray-50">
+                        <div class="absolute -top-3 left-4 bg-black text-white text-[8px] px-2 py-0.5 font-bold uppercase tracking-widest">
+                            Main Address
+                        </div>
+                        
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-bold text-sm">{{ $address->country }}</span>
+                            <span class="font-bold text-sm">{{ $address->full_name }}</span>
+                        </div>
+                        <div class="text-right text-xs text-gray-500 mb-2">Phone No. {{ $address->phone }}</div>
+                        <div class="text-xs text-gray-600 space-y-1">
+                            <p>{{ $address->address }}</p>
+                            <p><span class="inline-block w-20">{{ $address->apartment ?? '-' }}</span> Province: {{ $address->province }}</p>
+                            <p><span class="inline-block w-20">City: {{ $address->city }}</span> Zip Code: {{ $address->zip }}</p>
+                        </div>
+                        <a href="{{ route('account.index') }}" class="absolute bottom-4 right-4 text-[9px] font-bold uppercase tracking-widest text-black hover:underline">Change Address</a>
                     </div>
-                    <div class="text-right text-xs text-gray-500 mb-2">No Telp.09998887776891</div>
-                    <div class="text-xs text-gray-600 space-y-1">
-                        <p>Jl.Biru,RT03/RW06,No 20,Kel.Merah,Kec.Oren,Kota Pelangi</p>
-                        <p><span class="inline-block w-20">No.20</span> Prov: Gradasi</p>
-                        <p><span class="inline-block w-20">Kota: Pelangi</span> Kode Pos: 11223</p>
+                @else
+                    <div class="border border-dashed border-gray-300 p-8 text-center flex flex-col items-center justify-center">
+                        <p class="text-gray-400 text-sm mb-4">No shipping address found.</p>
+                        <a href="{{ route('address.create') }}" class="bg-black text-white text-[10px] uppercase font-bold px-4 py-2 hover:bg-gray-800 transition-colors">Add Address</a>
                     </div>
-                </div>
+                @endif
             </div>
 
-            <!-- Shipping Section -->
-            <div class="mb-10">
-                <h2 class="text-lg font-bold text-gray-900 mb-4">Pengiriman</h2>
-                <div class="space-y-4">
-                    <!-- Option 1 -->
-                    <label class="relative flex items-center justify-between border border-black p-4 cursor-pointer">
-                        <div class="flex items-center">
-                            <input type="radio" name="shipping" class="h-4 w-4 text-black border-gray-300 focus:ring-black" checked>
-                            <div class="ml-4">
-                                <span class="block text-sm font-medium text-gray-900">JNE Express</span>
-                                <span class="block text-xs text-gray-500">3 sampai 6 hari kerja</span>
-                                <span class="block text-xs text-gray-400">JNE Express</span>
-                            </div>
-                        </div>
-                        <span class="text-sm font-bold text-gray-900">Rp10.000</span>
-                    </label>
 
-                    <!-- Option 2 -->
-                    <label class="relative flex items-center justify-between border border-gray-200 p-4 cursor-pointer hover:border-gray-300">
-                        <div class="flex items-center">
-                            <input type="radio" name="shipping" class="h-4 w-4 text-black border-gray-300 focus:ring-black">
-                            <div class="ml-4">
-                                <span class="block text-sm font-medium text-gray-900">JNE Next Day</span>
-                                <span class="block text-xs text-gray-500">1 sampai 4 hari kerja</span>
-                                <span class="block text-xs text-gray-400">JNE Express & JNE Next Day</span>
+            <!-- Submit Button Form -->
+            <form action="{{ route('checkout.store') }}" method="POST">
+                @csrf
+                <!-- Shipping Section -->
+                <div class="mb-10">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 uppercase tracking-tight">Shipping Method</h2>
+                    <div class="space-y-4">
+                        <!-- JNE -->
+                        <label class="relative flex items-center justify-between border border-black p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center">
+                                <input type="radio" name="shipping_method" value="JNE" class="h-4 w-4 text-black border-gray-300 focus:ring-black" checked>
+                                <div class="ml-4">
+                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">JNE Express</span>
+                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">3 to 6 working days</span>
+                                </div>
                             </div>
-                        </div>
-                        <span class="text-sm font-bold text-gray-900">Rp40.000</span>
-                    </label>
+                            <span class="text-sm font-bold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
+                        </label>
+
+                        <!-- J&T -->
+                        <label class="relative flex items-center justify-between border border-gray-200 p-4 cursor-pointer hover:border-black hover:bg-gray-50 transition-all">
+                            <div class="flex items-center">
+                                <input type="radio" name="shipping_method" value="JNT" class="h-4 w-4 text-black border-gray-300 focus:ring-black">
+                                <div class="ml-4">
+                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">J&T Express</span>
+                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">2 to 4 working days</span>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
+                        </label>
+
+                        <!-- ANTERAJA -->
+                        <label class="relative flex items-center justify-between border border-gray-200 p-4 cursor-pointer hover:border-black hover:bg-gray-50 transition-all">
+                            <div class="flex items-center">
+                                <input type="radio" name="shipping_method" value="ANTERAJA" class="h-4 w-4 text-black border-gray-300 focus:ring-black">
+                                <div class="ml-4">
+                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">Anteraja</span>
+                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">2 to 5 working days</span>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Submit Button -->
-            <a href="{{ route('order.status') }}" class="block w-full text-center bg-black text-white py-4 font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors mb-4">
-                Bayar Sekarang
-            </a>
-            <p class="text-xs text-gray-400 text-center">Upload bukti Pembayaran di halaman Akun</p>
+                <button type="submit" class="block w-full text-center bg-black text-white py-4 font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors mb-4" {{ !$address ? 'disabled' : '' }}>
+                    Place Order & Pay
+                </button>
+            </form>
+            <p class="text-xs text-gray-400 text-center">Please upload payment proof in your Account page after ordering.</p>
         </div>
 
         <!-- Right Column: Order Summary -->
         <div class="lg:col-span-5 mt-10 lg:mt-0">
-            <div class="bg-gray-50 p-6 rounded-none">
+            <div class="bg-gray-50 p-6 rounded-none shadow-sm">
                 <!-- Product List -->
-                <div class="space-y-6 mb-8">
-                    <div class="flex space-x-4">
-                        <div class="h-20 w-16 bg-white overflow-hidden rounded-md border border-gray-200">
-                            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Product" class="h-full w-full object-cover object-center">
-                        </div>
-                        <div class="flex-1 flex justify-between text-sm">
-                            <div>
-                                <h3 class="font-medium text-gray-900 uppercase">NATGEO- ATLAS WINDSTOPPER BY GORE-TEX LABS SHORT GOOSE DOWN BLACK</h3>
-                                <p class="text-gray-500 mt-1">XL</p>
-                                <p class="text-gray-500">1X</p>
+                <div class="space-y-6 mb-8 max-h-96 overflow-y-auto pr-2">
+                    @foreach($cartItems as $item)
+                        <div class="flex space-x-4">
+                            <div class="h-20 w-16 bg-white overflow-hidden rounded-md border border-gray-200 flex-shrink-0">
+                                <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="h-full w-full object-cover object-center">
                             </div>
-                            <p class="font-medium text-gray-900">Rp6.999.000</p>
-                        </div>
-                    </div>
-
-                    <div class="flex space-x-4">
-                        <div class="h-20 w-16 bg-white overflow-hidden rounded-md border border-gray-200">
-                            <img src="https://images.unsplash.com/photo-1559551409-dadc959f76b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Product" class="h-full w-full object-cover object-center">
-                        </div>
-                        <div class="flex-1 flex justify-between text-sm">
-                            <div>
-                                <h3 class="font-medium text-gray-900 uppercase">NATGEO- ATLAS WINDSTOPPER BY GORE-TEX LABS SHORT GOOSE DOWN White</h3>
-                                <p class="text-gray-500 mt-1">M</p>
-                                <p class="text-gray-500">1X</p>
+                            <div class="flex-1 flex justify-between text-xs">
+                                <div class="pr-4">
+                                    <h3 class="font-bold text-gray-900 uppercase leading-tight">{{ $item->product->name }}</h3>
+                                    <p class="text-gray-500 mt-1">Size: {{ $item->size }}</p>
+                                    <p class="text-gray-500">{{ $item->quantity }}x @ Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>
+                                </div>
+                                <p class="font-bold text-gray-900 whitespace-nowrap">Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</p>
                             </div>
-                            <p class="font-medium text-gray-900">Rp3.999.000</p>
                         </div>
-                    </div>
+                    @endforeach
                 </div>
 
                 <!-- Totals -->
                 <div class="border-t border-gray-200 pt-6 space-y-4">
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Subtotal • 2 item</span>
-                        <span class="font-bold text-gray-900">Rp10.998.000</span>
+                        <span class="text-gray-600">Subtotal • {{ $cartItems->sum('quantity') }} items</span>
+                        <span class="font-bold text-gray-900">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Pengiriman</span>
-                        <span class="font-bold text-gray-900">Rp10.000</span>
+                        <span class="text-gray-600">Shipping</span>
+                        <span class="font-bold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center pt-4">
-                        <span class="text-2xl font-bold text-gray-900">Total</span>
+                        <span class="text-2xl font-bold text-gray-900 uppercase tracking-tight">Total</span>
                         <div class="text-right">
                             <span class="text-xs text-gray-500 mr-1">IDR</span>
-                            <span class="text-2xl font-bold text-gray-900">11.008.000</span>
+                            <span class="text-2xl font-bold text-gray-900">{{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Payment Methods -->
-            <div class="mt-8 grid grid-cols-3 gap-4">
-                <!-- Mandiri -->
-                <div class="border border-black rounded-lg p-4 flex flex-col items-center justify-between aspect-[3/4]">
-                    <span class="font-bold text-blue-800 italic">mandiri</span>
-
-                    <div
-                        class="copy-btn w-full border border-gray-300 rounded px-2 py-1 flex justify-between items-center text-xs cursor-pointer"
-                        data-copy="00123465477"
-                    >
-                        <span>00123465477</span>
-                        📋
-                    </div>
-
-                    <p
-                        class="copy-btn font-bold text-sm cursor-pointer"
-                        data-copy="11008000"
-                    >
-                        11.008.000
-                    </p>
-                </div>
-
-                <!-- BRI -->
-                <div class="border border-black rounded-lg p-4 flex flex-col items-center justify-between aspect-[3/4]">
-                    <span class="font-bold text-blue-600">BRI</span>
-
-                    <div
-                        class="copy-btn w-full border border-gray-300 rounded px-2 py-1 flex justify-between items-center text-xs cursor-pointer"
-                        data-copy="12345432139"
-                    >
-                        <span>12345432139</span>
-                        📋
-                    </div>
-
-                    <p
-                        class="copy-btn font-bold text-sm cursor-pointer"
-                        data-copy="11008000"
-                    >
-                        11.008.000
-                    </p>
-                </div>
-
-                <!-- BCA -->
-                <div class="border border-black rounded-lg p-4 flex flex-col items-center justify-between aspect-[3/4]">
-                    <span class="font-bold text-blue-700">BCA</span>
-
-                    <div
-                        class="copy-btn w-full border border-gray-300 rounded px-2 py-1 flex justify-between items-center text-xs cursor-pointer"
-                        data-copy="00123465477"
-                    >
-                        <span>00123465477</span>
-                        📋
-                    </div>
-
-                    <p
-                        class="copy-btn font-bold text-sm cursor-pointer"
-                        data-copy="11008000"
-                    >
-                        11.008.000
-                    </p>
-                </div>
-            </div>
         </div>
     </div>
 </div>
-
-{{-- SCRIPT COPY --}}
-<script>
-document.querySelectorAll('.copy-btn').forEach(el => {
-    el.addEventListener('click', () => {
-        const text = el.dataset.copy;
-        navigator.clipboard.writeText(text);
-
-        const original = el.innerText;
-        el.innerText = 'Copied!';
-        setTimeout(() => el.innerText = original, 1000);
-    });
-});
-</script>
 @endsection

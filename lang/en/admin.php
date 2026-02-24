@@ -1,0 +1,98 @@
+<?php
+
+return [
+    'dashboard' => 'Dashboard',
+    'products' => 'Products',
+    'orders' => 'Orders',
+    'users' => 'Users',
+    'finance_report' => 'Finance Report',
+    'logout' => 'Logout',
+    'welcome_back' => 'Welcome back!',
+    'store_summary' => "Here's what's happening with your store today.",
+    'revenue' => 'Revenue',
+    'total_orders' => 'Total Orders',
+    'total_products' => 'Total Products',
+    'total_users' => 'Total Users',
+    'top_selling_products' => 'Top Selling Products',
+    'sales' => 'Sales',
+    'no_sales_data' => 'No sales data available yet.',
+
+    // Finance Report
+    'finance_summary' => 'Summary of your store income, expenses, and profit.',
+    'money_in' => 'Money In',
+    'money_out' => 'Money Out',
+    'profit' => 'Profit',
+    'recent_transactions' => 'Recent Transactions (Success/Paid)',
+    'order_id' => 'Order ID',
+    'customer' => 'Customer',
+    'date' => 'Date',
+    'status' => 'Status',
+    'total' => 'Total',
+    'profit_20' => 'Profit (20%)',
+    'no_transactions' => 'No paid transaction data available.',
+    'paid_order_total' => 'Total from paid orders',
+    'estimated_cost' => 'Estimated cost (80% of revenue)',
+    'net_profit' => 'Net profit (20% from products)',
+
+    // Actions & Common
+    'add_product' => 'Add new Product',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'actions' => 'Actions',
+    'search' => 'Search',
+    'filter' => 'Filter',
+    'all' => 'All',
+    'cancel' => 'Cancel',
+    'save_changes' => 'Save Changes',
+    'update_status' => 'Update Status',
+
+    // Products
+    'manage_products' => 'Manage your product inventory',
+    'product_name' => 'Product Name',
+    'category' => 'Category',
+    'price' => 'Price',
+    'stock' => 'Stock',
+    'add_stock' => 'Add Stock',
+    'stock_history' => 'Stock History',
+    'update_product' => 'Update Product',
+
+    // Orders
+    'manage_orders' => 'Manage and track customer orders',
+    'items' => 'Items',
+    'transaction' => 'Transaction',
+    'print' => 'Print',
+    'ship' => 'Ship',
+
+    // Users
+    'manage_users' => 'Manage system users and roles',
+    'role' => 'Role',
+    'add_admin_officer' => 'Add Admin/Officer',
+    'full_name' => 'Full Name',
+    'email_address' => 'Email Address',
+    'system_role' => 'System Role',
+    'set_password' => 'Set Password',
+    'create_account' => 'Create Account',
+    'edit_user_info' => 'Edit User Info',
+    'yes_delete' => 'Yes, Delete',
+    'success' => 'Success!',
+    'operation_success' => 'Operation completed successfully.',
+    'delete_confirmation_user' => 'You are about to delete user :name. This action cannot be undone.',
+
+    // Product Create
+    'add_new_product' => 'Add New Product',
+    'fill_product_info' => 'Fill in the information below to add a new product to your catalog',
+    'brand' => 'Brand',
+    'select_brand' => 'Select Brand',
+    'product_images' => 'Product Images (Max 3)',
+    'description' => 'Description',
+    'save_product' => 'Save Product',
+    'enter_product_name' => 'Enter product name...',
+    'enter_product_description' => 'Enter product description...',
+    'max_3_images' => 'Max 3 images',
+    'image_info_text' => 'You can select up to 3 image files from your computer.',
+
+    // Roles
+    'role_admin' => 'Admin',
+    'role_officer' => 'Officer',
+    'role_customer' => 'Customer',
+];

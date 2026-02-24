@@ -23,15 +23,15 @@ class AccountController extends Controller
 
         // Count orders by status for the status circles
         $statusCounts = [
-            'menunggu-pembayaran' => $user->orders()->where('status', 'menunggu-pembayaran')->count(),
-            'sedang-dikemas' => $user->orders()->where('status', 'sedang-dikemas')->count(),
-            'sedang-dikirim' => $user->orders()->where('status', 'sedang-dikirim')->count(),
-            'pesanan-tiba' => $user->orders()->where('status', 'pesanan-tiba')->count(),
+            'waiting-payment' => $user->orders()->where('status', 'waiting-payment')->count(),
+            'processing' => $user->orders()->where('status', 'processing')->count(),
+            'shipped' => $user->orders()->where('status', 'shipped')->count(),
+            'arrived' => $user->orders()->where('status', 'arrived')->count(),
         ];
 
         // Get completed orders (history) with their items and products
         $completedOrders = $user->orders()
-            ->where('status', 'selesai')
+            ->where('status', 'completed')
             ->with(['items.product'])
             ->latest()
             ->get();
@@ -59,14 +59,14 @@ class AccountController extends Controller
     public function storeAddress(Request $request)
     {
         $validated = $request->validate([
-            'negara' => 'required|string|max:100',
+            'country' => 'required|string|max:100',
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'phone' => 'required|string|max:20',
-            'alamat' => 'required|string|max:500',
-            'apartemen' => 'nullable|string|max:200',
-            'kota' => 'required|string|max:100',
-            'provinsi' => 'required|string|max:100',
+            'address' => 'required|string|max:500',
+            'apartment' => 'nullable|string|max:200',
+            'city' => 'required|string|max:100',
+            'province' => 'required|string|max:100',
             'zip' => 'required|string|max:10',
         ]);
 
@@ -76,18 +76,63 @@ class AccountController extends Controller
         $isDefault = $user->addresses()->count() === 0;
 
         $user->addresses()->create([
-            'country' => $validated['negara'],
+            'country' => $validated['country'],
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
             'phone' => $validated['phone'],
-            'address' => $validated['alamat'],
-            'apartment' => $validated['apartemen'] ?? null,
-            'city' => $validated['kota'],
-            'province' => $validated['provinsi'],
+            'address' => $validated['address'],
+            'apartment' => $validated['apartment'] ?? null,
+            'city' => $validated['city'],
+            'province' => $validated['province'],
             'zip' => $validated['zip'],
             'is_default' => $isDefault,
         ]);
 
-        return redirect()->route('account.index')->with('success', 'Berhasil menambahkan alamat baru');
+        return redirect()->route('account.index')->with('success', 'New address added successfully');
+    }
+
+    /**
+     * Set an address as the default (main) address.
+     */
+    public function setMainAddress(Request $request, Address $address)
+    {
+        // Ensure the address belongs to the user
+        if ($address->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        // Set all other addresses for this user to not default
+        $request->user()->addresses()->update(['is_default' => false]);
+
+        // Set this address as default
+        $address->update(['is_default' => true]);
+
+        return redirect()->route('account.index')->with('success', 'Main address updated successfully');
+    }
+
+    /**
+     * Delete an address.
+     */
+    public function destroyAddress(Request $request, Address $address)
+    {
+        // Ensure the address belongs to the user
+        if ($address->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        // If it's the default, we might want to prevent deletion or pick a new default
+        $wasDefault = $address->is_default;
+
+        $address->delete();
+
+        // If the deleted address was default, set a new one if any exist
+        if ($wasDefault) {
+            $newDefault = $request->user()->addresses()->latest()->first();
+            if ($newDefault) {
+                $newDefault->update(['is_default' => true]);
+            }
+        }
+
+        return redirect()->route('account.index')->with('success', 'Address deleted successfully');
     }
 }

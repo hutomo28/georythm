@@ -27,7 +27,7 @@ class RegisterController extends Controller
         $request->validate([
             'username' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required'], // Simplified for mockup context, usually confirmed/validated
+            'password' => ['required', 'string', 'min:8'],
         ]);
 
         $user = User::create([
@@ -36,6 +36,6 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
+        return redirect()->route('login')->with('success', 'Registration successful! Please login.');
     }
 }

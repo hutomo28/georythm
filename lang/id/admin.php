@@ -1,0 +1,98 @@
+<?php
+
+return [
+    'dashboard' => 'Dasbor',
+    'products' => 'Produk',
+    'orders' => 'Pesanan',
+    'users' => 'Pengguna',
+    'finance_report' => 'Laporan Keuangan',
+    'logout' => 'Keluar',
+    'welcome_back' => 'Selamat datang kembali!',
+    'store_summary' => 'Berikut adalah apa yang terjadi dengan toko Anda hari ini.',
+    'revenue' => 'Pendapatan',
+    'total_orders' => 'Total Pesanan',
+    'total_products' => 'Total Produk',
+    'total_users' => 'Total Pengguna',
+    'top_selling_products' => 'Produk Terlaris',
+    'sales' => 'Penjualan',
+    'no_sales_data' => 'Belum ada data penjualan tersedia.',
+
+    // Finance Report
+    'finance_summary' => 'Ringkasan pendapatan, pengeluaran, dan keuntungan toko Anda.',
+    'money_in' => 'Uang Masuk',
+    'money_out' => 'Uang Keluar',
+    'profit' => 'Keuntungan',
+    'recent_transactions' => 'Transaksi Terakhir (Berhasil/Dibayar)',
+    'order_id' => 'ID Pesanan',
+    'customer' => 'Pelanggan',
+    'date' => 'Tanggal',
+    'status' => 'Status',
+    'total' => 'Total',
+    'profit_20' => 'Keuntungan (20%)',
+    'no_transactions' => 'Belum ada data transaksi yang dibayar.',
+    'paid_order_total' => 'Total dari pesanan yang sudah dibayar',
+    'estimated_cost' => 'Estimasi biaya (80% dari pendapatan)',
+    'net_profit' => 'Keuntungan bersih (20% dari produk)',
+
+    // Actions & Common
+    'add_product' => 'Tambah Produk Baru',
+    'edit' => 'Ubah',
+    'delete' => 'Hapus',
+    'actions' => 'Aksi',
+    'search' => 'Cari',
+    'filter' => 'Saring',
+    'all' => 'Semua',
+    'cancel' => 'Batal',
+    'save_changes' => 'Simpan Perubahan',
+    'update_status' => 'Perbarui Status',
+
+    // Products
+    'manage_products' => 'Kelola inventaris produk Anda',
+    'product_name' => 'Nama Produk',
+    'category' => 'Kategori',
+    'price' => 'Harga',
+    'stock' => 'Stok',
+    'add_stock' => 'Tambah Stok',
+    'stock_history' => 'Riwayat Stok',
+    'update_product' => 'Perbarui Produk',
+
+    // Orders
+    'manage_orders' => 'Kelola dan lacak pesanan pelanggan',
+    'items' => 'Item',
+    'transaction' => 'Transaksi',
+    'print' => 'Cetak',
+    'ship' => 'Kirim',
+
+    // Users
+    'manage_users' => 'Kelola pengguna sistem dan peran',
+    'role' => 'Peran',
+    'add_admin_officer' => 'Tambah Admin/Petugas',
+    'full_name' => 'Nama Lengkap',
+    'email_address' => 'Alamat Email',
+    'system_role' => 'Peran Sistem',
+    'set_password' => 'Atur Kata Sandi',
+    'create_account' => 'Buat Akun',
+    'edit_user_info' => 'Ubah Info Pengguna',
+    'yes_delete' => 'Ya, Hapus',
+    'success' => 'Berhasil!',
+    'operation_success' => 'Operasi berhasil diselesaikan.',
+    'delete_confirmation_user' => 'Anda akan menghapus pengguna :name. Tindakan ini tidak dapat dibatalkan.',
+
+    // Product Create
+    'add_new_product' => 'Tambah Produk Baru',
+    'fill_product_info' => 'Isi informasi di bawah ini untuk menambahkan produk baru ke katalog Anda',
+    'brand' => 'Merek',
+    'select_brand' => 'Pilih Merek',
+    'product_images' => 'Gambar Produk (Maks 3)',
+    'description' => 'Deskripsi',
+    'save_product' => 'Simpan Produk',
+    'enter_product_name' => 'Masukkan nama produk...',
+    'enter_product_description' => 'Masukkan deskripsi produk...',
+    'max_3_images' => 'Maks 3 gambar',
+    'image_info_text' => 'Anda dapat memilih hingga 3 file gambar dari komputer Anda.',
+
+    // Roles
+    'role_admin' => 'Admin',
+    'role_officer' => 'Petugas',
+    'role_customer' => 'Pelanggan',
+];

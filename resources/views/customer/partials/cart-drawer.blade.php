@@ -21,7 +21,7 @@
 
     <!-- Panel -->
     <div 
-        class="relative w-full max-w-md bg-white shadow-xl flex flex-col h-full transform transition-transform"
+        class="relative w-full max-w-md bg-white dark:bg-zinc-900 shadow-xl flex flex-col h-full transform transition-transform"
         x-show="cartOpen"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="translate-x-full"
@@ -31,9 +31,9 @@
         x-transition:leave-end="translate-x-full"
     >
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-6 border-b border-gray-100">
-            <h2 class="text-xl font-bold uppercase tracking-widest text-gray-900">Keranjang</h2>
-            <button @click="cartOpen = false" class="text-gray-400 hover:text-gray-900 transition-colors">
+        <div class="flex items-center justify-between px-6 py-6 border-b border-gray-100 dark:border-zinc-700">
+            <h2 class="text-xl font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100">Cart</h2>
+            <button @click="cartOpen = false" class="text-gray-400 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <span class="sr-only">Close</span>
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -62,7 +62,7 @@
                             <span class="w-8 h-8 flex items-center justify-center text-xs font-medium">1</span>
                             <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50">+</button>
                         </div>
-                        <button class="text-xs text-gray-400 hover:text-red-500 underline decoration-gray-300 hover:decoration-red-500 transition-colors">Hapus</button>
+                        <button class="text-xs text-gray-400 hover:text-red-500 underline decoration-gray-300 hover:decoration-red-500 transition-colors">Remove</button>
                     </div>
                 </div>
             </div>
@@ -86,20 +86,20 @@
                             <span class="w-8 h-8 flex items-center justify-center text-xs font-medium">1</span>
                             <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50">+</button>
                         </div>
-                        <button class="text-xs text-gray-400 hover:text-red-500 underline decoration-gray-300 hover:decoration-red-500 transition-colors">Hapus</button>
+                        <button class="text-xs text-gray-400 hover:text-red-500 underline decoration-gray-300 hover:decoration-red-500 transition-colors">Remove</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="border-t border-gray-100 px-6 py-6 bg-white">
+        <div class="border-t border-gray-100 dark:border-zinc-700 px-6 py-6 bg-white dark:bg-zinc-900">
             <div class="mb-4">
-                <label for="order-note" class="block text-sm font-medium text-gray-900 mb-2">Tulis Catatan</label>
+                <label for="order-note" class="block text-sm font-medium text-gray-900 mb-2">Order Notes</label>
             </div>
             
             <div class="mb-6">
-                <p class="text-sm text-gray-500 mb-4">Belum Termasuk Biaya Pengiriman</p>
+                <p class="text-sm text-gray-500 mb-4">Shipping not included</p>
                 <a href="{{ route('checkout.index') }}" class="w-full bg-black text-white py-4 font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors flex justify-between px-8">
                     <span>Checkout</span>
                     <span>•</span>

@@ -1,10 +1,10 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Dashboard')
+@section('title', __('admin.dashboard'))
 
 @section('content')
-    <h2 class="page-title">Dashboard</h2>
-    <p class="page-subtitle">Welcome back! Here's what's happening with your store today.</p>
+    <h2 class="page-title">{{ __('admin.dashboard') }}</h2>
+    <p class="page-subtitle">{{ __('admin.welcome_back') }} {{ __('admin.store_summary') }}</p>
 
     <style>
         .stats-grid {
@@ -15,13 +15,14 @@
         }
 
         .stat-card {
-            background-color: #fff;
-            border: 1px solid #1a1a1a;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            transition: all 0.3s;
         }
 
         .stat-icon {
@@ -41,23 +42,25 @@
 
         .stat-label {
             font-size: 14px;
-            color: #888;
+            color: var(--text-muted);
         }
 
         .stat-value {
             font-size: 22px;
             font-weight: 700;
+            color: var(--text-title);
         }
 
         .section-title {
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 25px;
+            color: var(--text-title);
         }
 
         .top-selling-container {
-            background-color: #fff;
-            border: 1px solid #1a1a1a;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
         }
@@ -67,7 +70,7 @@
             grid-template-columns: 80px 80px 1fr 150px 150px;
             align-items: center;
             padding: 15px 25px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .product-item:last-child {
@@ -77,8 +80,8 @@
         .rank {
             font-size: 24px;
             font-weight: 700;
-            color: #333;
-            background-color: #f0f0f0;
+            color: var(--text-main);
+            background-color: var(--nav-hover-bg);
             width: 40px;
             height: 40px;
             display: flex;
@@ -99,83 +102,62 @@
             font-size: 14px;
             text-transform: uppercase;
             padding-right: 20px;
+            color: var(--text-main);
         }
 
         .sales-count {
-            color: #888;
+            color: var(--text-muted);
             font-size: 18px;
         }
 
         .product-price {
             font-weight: 700;
             font-size: 18px;
-            color: #888;
+            color: var(--text-muted);
             text-align: right;
         }
     </style>
 
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-icon"><i class="fa-solid fa-dollar-sign"></i></div>
-            <div class="stat-label">Total Revenue</div>
-            <div class="stat-value">Rp287.525.000</div>
+            <div class="stat-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+            <div class="stat-label">{{ __('admin.revenue') }}</div>
+            <div class="stat-value">Rp{{ number_format($moneyIn, 0, ',', '.') }}</div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><i class="fa-solid fa-cart-shopping"></i></div>
-            <div class="stat-label">Total Orders</div>
-            <div class="stat-value">50</div>
+            <div class="stat-label">{{ __('admin.total_orders') }}</div>
+            <div class="stat-value">{{ $totalOrders }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background-color: #e6e6fa;"><i class="fa-solid fa-box"></i></div>
+            <div class="stat-label">{{ __('admin.total_products') }}</div>
+            <div class="stat-value">{{ $totalProducts }}</div>
         </div>
         @if(auth()->user()->isAdmin())
         <div class="stat-card">
-            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-            <div class="stat-label">Total Users</div>
-            <div class="stat-value">20</div>
+            <div class="stat-icon" style="background-color: #add8e6;"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-label">{{ __('admin.total_users') }}</div>
+            <div class="stat-value">{{ $totalUsers }}</div>
         </div>
         @endif
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
-            <div class="stat-label">Total Product</div>
-            <div class="stat-value">5</div>
-        </div>
     </div>
 
-    <h3 class="section-title">Top Selling Product</h3>
+    <h3 class="section-title">{{ __('admin.top_selling_products') }}</h3>
 
     <div class="top-selling-container">
+        @forelse($topSellingItems as $item)
         <div class="product-item">
-            <div class="rank">1</div>
-            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="NATGEO" class="product-img">
-            <div class="product-name">NATGEO- ATLAS WINDSTOPPER BY GORE-TEX LABS SHORT GOOSE DOWN BLACK</div>
-            <div class="sales-count">16 Sales</div>
-            <div class="product-price">Rp6.999.000</div>
+            <div class="rank">{{ $loop->iteration }}</div>
+            <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="product-img">
+            <div class="product-name">{{ $item->product->name }}</div>
+            <div class="sales-count">{{ $item->total_sales }} {{ __('admin.sales') }}</div>
+            <div class="product-price">{{ $item->product->formatted_price }}</div>
         </div>
-        <div class="product-item">
-            <div class="rank">2</div>
-            <img src="https://images.unsplash.com/photo-1544022613-e87ca75a784a?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="NATGEO" class="product-img">
-            <div class="product-name">NATGEO- ATLAS WINDSTOPPER BY GORE-TEX LABS SHORT GOOSE DOWN White</div>
-            <div class="sales-count">9 Sales</div>
-            <div class="product-price">Rp6.999.000</div>
+        @empty
+        <div class="product-item" style="justify-content: center; color: #888;">
+            {{ __('admin.no_sales_data') }}
         </div>
-        <div class="product-item">
-            <div class="rank">3</div>
-            <img src="https://images.unsplash.com/photo-1547996160-81f9608c3a99?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="TNF" class="product-img">
-            <div class="product-name">TNF- Men's DRYVENT™ Mono Mountain Jacket</div>
-            <div class="sales-count">9 Sales</div>
-            <div class="product-price">Rp2.550.000</div>
-        </div>
-        <div class="product-item">
-            <div class="rank">4</div>
-            <img src="https://images.unsplash.com/photo-1617137968427-85924c809a10?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="COLUMBIA" class="product-img">
-            <div class="product-name">COLUMBIA- Men's Whistler Peak™ Shell Jacket</div>
-            <div class="sales-count">8 Sales</div>
-            <div class="product-price">Rp4.200.000</div>
-        </div>
-        <div class="product-item">
-            <div class="rank">5</div>
-            <img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="ARC'TERYX" class="product-img">
-            <div class="product-name">Arcteryx- Beta LT Gore-Tex Jacket Mens Medium 30165</div>
-            <div class="sales-count">8 Sales</div>
-            <div class="product-price">Rp7.000.000</div>
-        </div>
+        @endforelse
     </div>
 @endsection

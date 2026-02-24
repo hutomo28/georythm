@@ -75,6 +75,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's cart items.
+     */
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
