@@ -39,7 +39,7 @@
                                             </h3>
                                         </div>
                                         <div class="mt-1 flex text-xs text-gray-500 uppercase tracking-widest">
-                                            <p>{{ $item->product->category }}</p>
+                                            <p translate="no" class="notranslate text-[10px] text-gray-400 font-bold uppercase">{{ $item->product->category }}</p>
                                             <p class="ml-4 border-l border-gray-200 pl-4">{{ $item->size }}</p>
                                         </div>
                                         <p class="mt-1 text-sm font-medium text-gray-900">Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>

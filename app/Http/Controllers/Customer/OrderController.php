@@ -15,15 +15,21 @@ class OrderController extends Controller
         $status = $request->query('status', 'waiting-payment');
 
         $titles = [
-            'waiting-payment' => 'Waiting Payment',
-            'processing' => 'Processing',
-            'shipped' => 'Shipped',
-            'arrived' => 'Arrived',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled',
+            'waiting-payment' => __('customer.waiting_payment'),
+            'processing' => __('customer.processing'),
+            'shipped' => __('customer.shipped_status'),
+            'arrived' => __('customer.arrived_status'),
+            'completed' => __('customer.completed_status'),
+            'cancelled' => __('customer.cancelled_status'),
         ];
 
         $title = $titles[$status] ?? 'Order Status';
+
+        // Auto-complete orders that have been 'arrived' for more than 48 hours
+        Order::where('status', 'arrived')
+            ->where('user_id', Auth::id())
+            ->where('arrived_at', '<=', now()->subHours(48))
+            ->update(['status' => 'completed']);
 
         // Fetch all orders with this status for the user
         $orders = Order::where('user_id', Auth::id())

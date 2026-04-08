@@ -397,7 +397,13 @@ class AdminController extends Controller
         ]);
 
         $order = \App\Models\Order::findOrFail($id);
-        $order->update(['status' => $request->status]);
+        
+        $updateData = ['status' => $request->status];
+        if ($request->status === 'arrived' && !$order->arrived_at) {
+            $updateData['arrived_at'] = now();
+        }
+
+        $order->update($updateData);
 
         return redirect()->route($this->routePrefix().'.orders')->with('success', 'Order status updated successfully!');
     }

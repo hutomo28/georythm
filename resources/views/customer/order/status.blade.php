@@ -12,15 +12,15 @@
     <!-- Order List -->
     <div class="max-w-4xl mx-auto space-y-16">
 @forelse($orders as $order)
-            <div class="border border-gray-200 p-8 shadow-sm bg-white relative" x-data="{ localUploadModalOpen: false, localReceivedModalOpen: false, localCancelModalOpen: false }">
+            <div class="border border-gray-200 p-8 shadow-sm bg-white relative" x-data="{ localUploadModalOpen: false, localCancelModalOpen: false }">
                 <!-- Order Header Info -->
                 <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
                     <div>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Order Number</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ __('customer.order_number') }}</p>
                         <h2 class="text-sm font-bold text-gray-900 uppercase">{{ $order->order_number }}</h2>
                     </div>
                     <div class="text-right">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ __('customer.date') }}</p>
                         <p class="text-xs font-bold text-gray-900">{{ $order->created_at->format('d M Y') }}</p>
                         
                         @if($status === 'waiting-payment')
@@ -47,8 +47,36 @@
                                     this.timeBox = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
                                 }
                             }">
-                                <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest mb-1">Time Remaining</p>
+                                <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest mb-1">{{ __('customer.time_remaining') }}</p>
                                 <p class="text-xs font-black text-red-600 bg-red-50 py-1 px-3 inline-block" x-text="timeBox"></p>
+                            </div>
+                        @elseif($status === 'arrived' && $order->arrived_at)
+                            <div class="mt-2" x-data="{ 
+                                deadline: new Date('{{ $order->arrived_at->addHours(48)->toIso8601String() }}').getTime(),
+                                timeBox: 'Loading...',
+                                init() {
+                                    this.updateTime();
+                                    setInterval(() => this.updateTime(), 1000);
+                                },
+                                updateTime() {
+                                    const now = new Date().getTime();
+                                    const distance = this.deadline - now;
+                                    
+                                    if (distance < 0) {
+                                        this.timeBox = 'COMPLETING...';
+                                        window.location.reload();
+                                        return;
+                                    }
+                                    
+                                    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    const s = Math.floor((distance % (1000 * 60)) / 1000);
+                                    
+                                    this.timeBox = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+                                }
+                            }">
+                                <p class="text-[9px] font-bold text-green-500 uppercase tracking-widest mb-1">{{ __('customer.auto_complete_label') }}</p>
+                                <p class="text-xs font-black text-green-600 bg-green-50 py-1 px-3 inline-block" x-text="timeBox"></p>
                             </div>
                         @endif
                     </div>
@@ -95,7 +123,7 @@
                     <div class="flex flex-col items-end space-y-3">
                         @if($status === 'shipped')
                             <div class="flex items-center space-x-3 text-gray-700" x-data="{ copied: false }">
-                                <span class="text-[11px] font-bold uppercase tracking-widest">Receipt: {{ $order->receipt_number }}</span>
+                                <span class="text-[11px] font-bold uppercase tracking-widest">Shipping Number: {{ $order->receipt_number }}</span>
                                 <button 
                                     @click="navigator.clipboard.writeText('{{ $order->receipt_number }}'); copied = true; setTimeout(() => copied = false, 2000)"
                                     class="text-gray-400 hover:text-black transition-all focus:outline-none flex items-center space-x-1 group/copy"
@@ -107,32 +135,27 @@
                                     <svg x-show="copied" x-cloak class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span x-show="copied" x-cloak class="text-[10px] text-green-500 font-bold uppercase tracking-widest">Copied!</span>
+                                    <span x-show="copied" x-cloak class="text-[10px] text-green-500 font-bold uppercase tracking-widest">OK!</span>
                                 </button>
                             </div>
                             <div class="flex space-x-3">
                                 <a href="{{ $order->tracking_link ?? '#' }}" target="_blank" class="flex items-center space-x-3 border-2 border-black text-black px-6 py-3 font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white transition-all transition-all duration-300">
-                                    Track Order
+                                    {{ __('customer.track_order') }}
                                 </a>
-                                <button @click="localReceivedModalOpen = true" class="bg-black text-white px-8 py-3 font-bold text-[10px] uppercase tracking-widest border-2 border-black hover:bg-white hover:text-black transition-all duration-300">
-                                    Order Received
-                                </button>
                             </div>
                         @elseif($status === 'arrived')
-                            <button @click="localReceivedModalOpen = true" class="bg-black text-white px-8 py-3 font-bold text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-colors">
-                                Order Received
-                            </button>
+                            {{-- Button removed as per user request --}}
                         @elseif($status === 'completed')
                             <a href="{{ route('order.review', $order->id) }}" class="bg-black text-white px-8 py-3 font-bold text-[10px] uppercase tracking-widest border-2 border-black hover:bg-white hover:text-black transition-all duration-300">
-                                Give Review
+                                {{ __('customer.give_review') }}
                             </a>
                         @elseif($status === 'waiting-payment')
                             <div class="flex space-x-3">
                                 <button @click="localCancelModalOpen = true" class="border-2 border-red-500 text-red-500 px-6 py-3 font-bold text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all duration-300">
-                                    Cancel Order
+                                    {{ __('customer.cancel_order') }}
                                 </button>
                                 <button @click="localUploadModalOpen = true" class="bg-black text-white px-8 py-3 font-bold text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-colors">
-                                    Upload Payment Proof
+                                    {{ __('customer.upload_payment') }}
                                 </button>
                             </div>
                         @elseif($status === 'processing')
@@ -304,43 +327,6 @@
                     </div>
                 </template>
 
-                <!-- Received Modal -->
-                <template x-if="localReceivedModalOpen">
-                    <div class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                        <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                            class="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity" @click="localReceivedModalOpen = false"></div>
-                        <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
-                            <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                class="relative transform overflow-hidden bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-2xl border-2 border-black">
-                                <div class="bg-black px-6 py-4 flex justify-between items-center">
-                                    <h3 class="text-lg font-bold text-white uppercase tracking-widest leading-6">Arrival Confirmation - {{ $order->order_number }}</h3>
-                                    <button @click="localReceivedModalOpen = false" class="text-white hover:text-gray-300 transition-colors">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                    </button>
-                                </div>
-                                <div class="px-10 py-12 text-center">
-                                    <div class="mb-6 flex justify-center">
-                                        <div class="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100">
-                                            <svg class="h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                                        </div>
-                                    </div>
-                                    <p class="text-xl font-bold text-gray-900 uppercase tracking-widest mb-2">Order Arrived?</p>
-                                    <p class="text-sm text-gray-500 mb-10 font-medium">Ensure you have received and checked your package before confirming.</p>
-                                    <div class="space-y-3 max-w-sm mx-auto">
-                                        <form action="{{ route('order.confirm-received', $order->id) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="w-full bg-black border-2 border-black text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all duration-500 flex items-center justify-center">
-                                                Yes, I Received It
-                                            </button>
-                                        </form>
-                                        <button @click="localReceivedModalOpen = false" class="w-full bg-white border-2 border-gray-100 py-4 font-bold text-gray-400 uppercase tracking-widest text-xs hover:border-gray-300 hover:text-gray-900 transition-all duration-500">
-                                            Not Yet, Later
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </template>
 
                 <!-- Cancel Order Modal -->

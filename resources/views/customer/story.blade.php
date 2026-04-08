@@ -31,7 +31,7 @@
                         Born from a passion for global exploration and the rhythmic beat of urban life, GEORYTHM was founded to bring together the world's most trusted outdoor brands under one roof. We believe that every journey—whether it's hiking a remote trail or navigating city streets—deserves gear that is built to last.
                     </p>
                     <p>
-                        We have meticulously selected partners like <span class="font-bold text-gray-900">National Geographic</span>, <span class="font-bold text-gray-900">The North Face</span>, <span class="font-bold text-gray-900">Columbia</span>, and <span class="font-bold text-gray-900">Arc'teryx</span> because they share our commitment to innovation, sustainability, and uncompromising quality.
+                        We have meticulously selected partners like <span translate="no" class="notranslate font-bold text-gray-900">National Geographic</span>, <span translate="no" class="notranslate font-bold text-gray-900">The North Face</span>, <span translate="no" class="notranslate font-bold text-gray-900">Columbia</span>, and <span translate="no" class="notranslate font-bold text-gray-900">Arc'teryx</span> because they share our commitment to innovation, sustainability, and uncompromising quality.
                     </p>
                 </div>
 

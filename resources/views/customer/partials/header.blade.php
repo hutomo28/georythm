@@ -22,19 +22,19 @@
             <!-- Menu (Desktop) -->
             <nav class="hidden md:flex space-x-8">
                 <a href="{{ route('products.index') }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 font-medium uppercase text-sm transition-colors">
-                    All Products
+                    {{ __('customer.all_products') }}
                 </a>
                 <a href="{{ route('products.index', ['category' => 'natgeo']) }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 font-medium uppercase text-sm transition-colors">
-                    NatGeo
+                    {{ __('customer.natgeo') }}
                 </a>
                 <a href="{{ route('products.index', ['category' => 'tnf']) }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 font-medium uppercase text-sm transition-colors">
-                    TNF
+                    {{ __('customer.tnf') }}
                 </a>
                 <a href="{{ route('products.index', ['category' => 'arcteryx']) }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 font-medium uppercase text-sm transition-colors">
-                    Arcteryx
+                    {{ __('customer.arcteryx') }}
                 </a>
                 <a href="{{ route('products.index', ['category' => 'columbia']) }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 font-medium uppercase text-sm transition-colors">
-                    Columbia
+                    {{ __('customer.columbia') }}
                 </a>
             </nav>
 
@@ -56,6 +56,19 @@
                     </button>
                 </div>
 
+                <!-- Language Switcher -->
+                <div class="flex items-center space-x-2 mr-2">
+                    <a href="{{ route('set-locale', 'en') }}" 
+                       class="text-[10px] font-black tracking-widest px-1.5 py-0.5 rounded transition-all {{ app()->getLocale() == 'en' ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
+                       EN
+                    </a>
+                    <span class="text-gray-200 dark:text-zinc-800">|</span>
+                    <a href="{{ route('set-locale', 'id') }}" 
+                       class="text-[10px] font-black tracking-widest px-1.5 py-0.5 rounded transition-all {{ app()->getLocale() == 'id' ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
+                       ID
+                    </a>
+                </div>
+
                 <!-- Theme Toggle -->
                 <button id="theme-toggle" title="Toggle tema" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors">
                     <!-- Sun icon (shown in dark mode) -->
@@ -71,11 +84,14 @@
                 </button>
 
                 <!-- Account -->
-                <a href="{{ route('account.index') }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors" title="Account">
+                <a href="{{ route('account.index') }}" class="flex items-center space-x-2 text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors" title="Account">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
+                    @guest
+                        <span class="hidden md:inline text-[10px] font-bold uppercase tracking-widest">Login</span>
+                    @endguest
                 </a>
 
                 <!-- Cart -->

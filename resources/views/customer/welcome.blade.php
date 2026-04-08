@@ -18,18 +18,17 @@
             <div class="max-w-3xl">
                 <span class="text-yellow-500 font-bold tracking-widest uppercase mb-4 block animate-fade-in-up">25FW Collection</span>
                 <h1 class="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 animate-fade-in-up delay-100">
-                    GEAR UP FOR <br/>
-                    A NEW SEASON
+                    {!! __('customer.hero_title') !!}
                 </h1>
                 <p class="text-xl text-gray-300 mb-8 max-w-xl animate-fade-in-up delay-200">
-                    Discover our latest arrival of premium outdoor jackets designed for the extreme, styled for the city.
+                    {{ __('customer.hero_subtitle') }}
                 </p>
                 <div class="flex flex-wrap gap-4 animate-fade-in-up delay-300">
                     <a href="{{ route('products.index') }}" class="bg-yellow-500 text-black px-8 py-4 font-bold uppercase tracking-wide hover:bg-yellow-400 transition-colors">
-                        Shop Now
+                        {{ __('customer.shop_now') }}
                     </a>
                     <a href="{{ route('customer.lookbook') }}" class="border border-white text-white px-8 py-4 font-bold uppercase tracking-wide hover:bg-white hover:text-black transition-colors">
-                        View Lookbook
+                        {{ __('customer.view_lookbook') }}
                     </a>
                 </div>
             </div>
@@ -42,10 +41,10 @@
             <p class="text-center text-gray-500 text-sm uppercase tracking-widest mb-8">Trusted by Explorers</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                 <!-- Using text representations for logos as placeholders -->
-                <span class="text-white text-xl font-bold font-serif">NATIONAL GEOGRAPHIC</span>
-                <span class="text-white text-xl font-black italic">THE NORTH FACE</span>
-                <span class="text-white text-xl font-medium tracking-tight">ARC'TERYX</span>
-                <span class="text-white text-xl font-bold">Columbia</span>
+                <span translate="no" class="notranslate text-white text-xl font-bold font-serif">NATIONAL GEOGRAPHIC</span>
+                <span translate="no" class="notranslate text-white text-xl font-black italic">THE NORTH FACE</span>
+                <span translate="no" class="notranslate text-white text-xl font-medium tracking-tight">ARC'TERYX</span>
+                <span translate="no" class="notranslate text-white text-xl font-bold">Columbia</span>
             </div>
         </div>
     </div>
@@ -54,7 +53,7 @@
     <section class="py-24 bg-white dark:bg-zinc-950">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-slate-100 uppercase tracking-tight mb-4">New Arrivals</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-slate-100 uppercase tracking-tight mb-4">{{ __('customer.new_arrivals') }}</h2>
                 <div class="w-20 h-1 bg-yellow-500 mx-auto"></div>
             </div>
 
@@ -81,7 +80,7 @@
                         @endif
                     </div>
                     <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase mb-1">{{ $product->name }}</h3>
-                    <p class="text-xs text-gray-500 mb-2">{{ $product->category }} - {{ $product->size }}</p>
+                    <p translate="no" class="notranslate text-xs text-gray-500 mb-2">{{ $product->category }} - {{ $product->size }}</p>
                     
                     <div class="flex items-center space-x-1 mb-3">
                         @php $rating = $product->averageRating() ?: 4.8; @endphp
@@ -100,7 +99,7 @@
             
             <div class="text-center mt-12">
                 <a href="{{ route('products.index') }}" class="inline-block border-b-2 border-black dark:border-slate-400 text-black dark:text-slate-200 pb-1 font-bold uppercase tracking-wide hover:text-yellow-600 hover:border-yellow-600 transition-colors">
-                    View All Products
+                    {{ __('customer.view_all') }}
                 </a>
             </div>
         </div>
@@ -121,26 +120,26 @@
 
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
             <div class="mb-10">
-                <span class="text-yellow-500 font-bold tracking-widest uppercase text-sm">Our Philosophy</span>
+                <span class="text-yellow-500 font-bold tracking-widest uppercase text-sm">{{ __('customer.our_philosophy') }}</span>
             </div>
             <h2 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-8 leading-tight">
-                EXPLORE THE WORLD. <br/> WEAR THE RHYTHM.
+                {!! __('customer.philosophy_title') !!}
             </h2>
             <div class="space-y-6 text-gray-600 dark:text-slate-400 leading-relaxed font-light text-lg">
                 <p>
-                    GEORYTHM is an apparel store focused on premium outdoor and lifestyle jackets, presenting a curated collection from world-renowned brands like National Geographic, The North Face, Columbia, and Arc'teryx.
+                    {{ __('customer.philosophy_p1') }}
                 </p>
                 <p>
-                    We are here to meet the needs of adventure lovers, urban explorers, and daily users who prioritize quality, comfort, and classy design in every activity.
+                    {{ __('customer.philosophy_p2') }}
                 </p>
                 <p>
-                    The name GEORYTHM is inspired by the combination of "Geo" (earth, world, exploration) and "Rhythm" (rhythm, lifestyle, movement). This philosophy reflects the balance between technical function and modern style—where every jacket is not just protection from extreme weather, but also part of the identity and rhythm of its user's life.
+                    {{ __('customer.philosophy_p3') }}
                 </p>
             </div>
             
             <div class="mt-12">
                 <a href="{{ route('customer.story') }}" class="text-sm font-bold uppercase tracking-widest text-gray-900 dark:text-slate-200 hover:text-yellow-500 transition-colors">
-                    Read Our Full Story &rarr;
+                    {{ __('customer.read_more') }} &rarr;
                 </a>
             </div>
         </div>

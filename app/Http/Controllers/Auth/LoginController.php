@@ -27,7 +27,7 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
 
             if (Auth::user()->isAdmin()) {
@@ -38,7 +38,7 @@ class LoginController extends Controller
                 return redirect()->route('officer.dashboard');
             }
 
-            return redirect()->route('customer.welcome');
+            return redirect()->intended(route('customer.welcome'));
         }
 
         throw ValidationException::withMessages([

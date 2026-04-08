@@ -57,7 +57,7 @@
             </div>
 
             <div class="mb-6">
-                <h3 class="text-xs font-bold text-yellow-500 uppercase tracking-widest mb-2">{{ $product->category }}</h3>
+                <h3 translate="no" class="notranslate text-xs font-bold text-yellow-500 uppercase tracking-widest mb-2">{{ $product->category }}</h3>
                 <div class="text-base text-gray-700 space-y-4">
                     <p>{{ $product->description }}</p>
                 </div>
@@ -239,7 +239,7 @@
                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
                 </div>
                 <div class="space-y-1">
-                    <h4 class="text-[11px] font-extrabold text-yellow-600 dark:text-yellow-500 uppercase tracking-[0.2em] mb-1.5">{{ $related->category }}</h4>
+                    <h4 translate="no" class="notranslate text-[11px] font-extrabold text-yellow-600 dark:text-yellow-500 uppercase tracking-[0.2em] mb-1.5">{{ $related->category }}</h4>
                     <h3 class="text-sm font-bold text-gray-900 dark:text-slate-100 uppercase mb-1 line-clamp-1 group-hover:text-yellow-600 transition-colors">{{ $related->name }}</h3>
                     <p class="text-sm font-medium text-gray-900 dark:text-slate-400">Rp {{ number_format($related->price, 0, ',', '.') }}</p>
                 </div>

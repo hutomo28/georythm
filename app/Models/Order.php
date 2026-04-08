@@ -25,10 +25,12 @@ class Order extends Model
         'receipt_number',
         'delivery_service',
         'shipping_cost',
+        'arrived_at',
     ];
 
     protected $casts = [
         'total' => 'decimal:2',
+        'arrived_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -62,7 +64,7 @@ class Order extends Model
      */
     public function getStatusLabelAttribute(): string
     {
-        $lang = session('locale', 'en'); // Default to English if no choice
+        $lang = app()->getLocale(); // Use app locale instead of direct session
 
         $labels = [
             'en' => [
@@ -98,5 +100,15 @@ class Order extends Model
         // Use CekResi.com as the unified tracking aggregator for all couriers
         // It automatically detects JNE, J&T, SiCepat, Anteraja, etc.
         return 'https://cekresi.com/?noresi='.$this->receipt_number;
+    }
+
+    public function getRemainingCompleteTimeSecondsAttribute(): int
+    {
+        if (!$this->arrived_at) return 0;
+        
+        $expiry = $this->arrived_at->copy()->addHours(48);
+        $remaining = now()->diffInSeconds($expiry, false);
+        
+        return $remaining > 0 ? (int)$remaining : 0;
     }
 }

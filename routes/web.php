@@ -28,24 +28,20 @@ Route::get('/', function () {
         if (auth()->user()->isOfficer()) {
             return redirect()->route('officer.dashboard');
         }
-
-        return redirect()->route('customer.welcome');
     }
 
-    return redirect()->route('login');
+    return redirect()->route('customer.welcome');
 })->name('home');
 
-// Customer routes
+// Public customer routes (Guest accessible)
+Route::get('/welcome', [ProductController::class, 'welcome'])->name('customer.welcome');
+Route::get('/lookbook', [ProductController::class, 'lookbook'])->name('customer.lookbook');
+Route::get('/our-story', [ProductController::class, 'story'])->name('customer.story');
+Route::get('/shop/{category?}', [ProductController::class, 'index'])->name('products.index');
+Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
+
+// Protected Customer routes
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/welcome', [ProductController::class, 'welcome'])->name('customer.welcome');
-    Route::get('/lookbook', [ProductController::class, 'lookbook'])->name('customer.lookbook');
-    Route::get('/our-story', [ProductController::class, 'story'])->name('customer.story');
-
-    Route::get('/product/{id}', function ($id) {
-        return "Product $id detail";
-    }
-    )->name('products.show');
-
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
@@ -61,9 +57,6 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/order/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
     Route::get('/order/{order}/review', [OrderController::class, 'review'])->name('order.review');
     Route::post('/order/{order}/review', [OrderController::class, 'storeReview'])->name('order.review.store');
-
-    Route::get('/shop/{category?}', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
@@ -124,6 +117,8 @@ Route::middleware(['auth', 'role:officer'])->prefix('officer')->group(function (
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'id'])) {
         session(['locale' => $locale]);
+        session()->save();
+        app()->setLocale($locale);
     }
 
     return back();

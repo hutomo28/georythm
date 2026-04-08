@@ -291,8 +291,8 @@
                     <option value="waiting-payment">Waiting Payment</option>
                     <option value="processing">Processing</option>
                     <option value="shipped">Shipped</option>
-                    <option value="arrived">Completed (Arrived)</option>
-                    <option value="completed" disabled>Completed (Confirmed by Customer)</option>
+                    <option value="arrived">Pesanan Tiba (Mulai Hitung Mundur 2 x 24 Jam)</option>
+                    <option value="completed">Completed (Confirmed by Customer)</option>
                 </select>
                 <div style="position: absolute; right: 20px; top: 43px; pointer-events: none; color: var(--text-main);">
                     <i class="fa-solid fa-chevron-down"></i>
@@ -397,7 +397,7 @@
         const statusSelect = document.getElementById('order_status');
         statusSelect.value = order.status;
 
-        const statuses = ['waiting-payment', 'processing', 'shipped', 'completed'];
+        const statuses = ['waiting-payment', 'processing', 'shipped', 'arrived', 'completed'];
         const currentIndex = statuses.indexOf(order.status);
 
         // Disable options that are the current status or before it

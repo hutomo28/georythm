@@ -221,6 +221,12 @@
                 @enderror
             </div>
 
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: -5px; text-align: left;">
+                <input type="checkbox" name="remember" id="remember" checked 
+                       style="width: 16px; height: 16px; margin: 0; accent-color: #FFEA00; cursor: pointer;">
+                <label for="remember" style="font-size: 14px; cursor: pointer; color: var(--text-main); font-weight: 700; user-select: none;">Remember Me</label>
+            </div>
+
             <div class="footer-links">
                 <p>Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
                 <button type="submit" class="login-btn">Login</button>

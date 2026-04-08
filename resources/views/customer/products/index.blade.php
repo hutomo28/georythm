@@ -42,7 +42,7 @@
                 
                 <!-- Content -->
                 <div class="text-center space-y-2 px-4">
-                    <p class="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest">
+                    <p translate="no" class="notranslate text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest">
                         {{ $product['brand'] }}
                     </p>
                     <h3 class="text-xs text-gray-600 dark:text-zinc-400 uppercase leading-relaxed font-bold line-clamp-2 min-h-[2.5em] group-hover:text-black dark:group-hover:text-white transition-colors">
@@ -102,7 +102,7 @@
                     
                     <!-- Content -->
                     <div class="text-center space-y-2 px-4">
-                        <p class="text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">
+                        <p translate="no" class="notranslate text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">
                             {{ $product['brand'] }}
                         </p>
                         <h3 class="text-xs text-gray-400 dark:text-zinc-600 uppercase leading-relaxed font-bold line-clamp-2 min-h-[2.5em]">
