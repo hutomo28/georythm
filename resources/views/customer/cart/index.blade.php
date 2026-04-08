@@ -3,7 +3,7 @@
 @section('title', 'Shopping Cart - Georythm')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:pt-32">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:pt-12">
     <div class="text-center mb-16 relative">
         <h1 class="text-3xl md:text-4xl font-normal text-gray-900 mb-2 uppercase">Your Cart</h1>
         <div class="text-center border-t border-b border-gray-200 py-3 mt-8">

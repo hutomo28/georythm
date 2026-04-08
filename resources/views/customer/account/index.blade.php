@@ -116,7 +116,7 @@
             <!-- Order Status -->
             <div class="mb-16">
                 <h2 class="text-2xl font-normal text-gray-900 mb-8">Order Status</h2>
-                <div class="flex justify-between items-start max-w-2xl">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl">
                     <!-- Status 1 -->
                     <button class="text-center group cursor-pointer focus:outline-none transition-transform hover:scale-105" onclick="window.location.href='{{ route('order.status', ['status' => 'waiting-payment']) }}'">
                         <div class="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center mb-3 mx-auto transition-colors group-hover:bg-black group-hover:text-white">
@@ -153,10 +153,23 @@
                 <h2 class="text-2xl font-normal text-gray-900 mb-6">Order History</h2>
                 <div class="border-t border-black">
                     @forelse($completedOrders as $order)
-                        @foreach($order->items as $item)
-                            <div class="py-6 border-b {{ $loop->last && $loop->parent->last ? 'border-black' : 'border-gray-200' }}">
+                        <div class="py-4 border-b {{ $loop->last ? 'border-black' : 'border-gray-200' }}">
+                            {{-- Order header with status badge --}}
+                            <div class="flex justify-between items-center mb-3 mt-2">
+                                <div>
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{{ $order->order_number }}</p>
+                                    <p class="text-[10px] text-gray-400">{{ $order->created_at->format('d M Y') }}</p>
+                                </div>
+                                @if($order->status === 'cancelled')
+                                    <span class="text-[9px] font-bold uppercase tracking-widest bg-red-50 text-red-500 border border-red-200 px-3 py-1">Cancelled</span>
+                                @else
+                                    <span class="text-[9px] font-bold uppercase tracking-widest bg-green-50 text-green-600 border border-green-200 px-3 py-1">Completed</span>
+                                @endif
+                            </div>
+                            @foreach($order->items as $item)
+                            <div class="py-3 {{ !$loop->last ? 'border-b border-gray-100' : '' }}">
                                 <div class="flex space-x-6">
-                                    <div class="w-24 h-28 bg-gray-100 flex-shrink-0">
+                                    <div class="w-24 h-28 bg-gray-100 flex-shrink-0 {{ $order->status === 'cancelled' ? 'opacity-50 grayscale' : '' }}">
                                         @if($item->product && $item->product->image)
                                             <img src="{{ $item->product->image }}" alt="{{ $item->product_name }}" class="w-full h-full object-cover">
                                         @else
@@ -178,13 +191,12 @@
                                         <p class="text-xs text-gray-500">{{ $item->quantity }}x</p>
                                     </div>
                                 </div>
-                                @if($loop->last)
-                                    <div class="text-right mt-4">
-                                        <p class="text-sm font-bold text-gray-900">Total: {{ $order->formatted_total }}</p>
-                                    </div>
-                                @endif
                             </div>
-                        @endforeach
+                            @endforeach
+                            <div class="text-right mt-2">
+                                <p class="text-sm font-bold text-gray-900">Total: {{ $order->formatted_total }}</p>
+                            </div>
+                        </div>
                     @empty
                         <div class="py-12 text-center">
                             <p class="text-gray-400 text-sm">No order history yet.</p>

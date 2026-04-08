@@ -4,13 +4,22 @@
     <div class="max-w-7xl mx-auto px-6">
         <div class="flex justify-between items-center h-20">
 
+            <!-- Mobile Menu Toggle -->
+            <div class="flex md:hidden">
+                <button @click="mobileMenuOpen = true" class="text-black dark:text-white p-2">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
             <!-- Logo -->
             <a href="{{ route('home') }}" 
                class="text-2xl font-bold tracking-tight uppercase text-black dark:text-white">
                 GEO<span class="text-yellow-500">RYTHM</span>
             </a>
 
-            <!-- Menu -->
+            <!-- Menu (Desktop) -->
             <nav class="hidden md:flex space-x-8">
                 <a href="{{ route('products.index') }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 font-medium uppercase text-sm transition-colors">
                     All Products
@@ -30,7 +39,7 @@
             </nav>
 
             <!-- Icons -->
-            <div class="flex items-center space-x-6">
+            <div class="flex items-center space-x-3 md:space-x-6">
 
                 <!-- Search -->
                 <div class="relative flex items-center">
@@ -61,26 +70,16 @@
                     </svg>
                 </button>
 
-                <!-- Account & Logout -->
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('account.index') }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors" title="Account">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    </a>
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-gray-400 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Logout">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                        </button>
-                    </form>
-                </div>
+                <!-- Account -->
+                <a href="{{ route('account.index') }}" class="text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors" title="Account">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </a>
 
                 <!-- Cart -->
-                <a href="{{ route('cart.index') }}"
+                <button @click="cartOpen = true"
                         class="relative text-black dark:text-slate-200 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,8 +91,93 @@
                             {{ Auth::user()->carts()->sum('quantity') }}
                         </span>
                     @endunless
-                </a>
+                </button>
 
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Slide-over -->
+    <div 
+        class="fixed inset-0 z-[1000] flex md:hidden" 
+        role="dialog" 
+        aria-modal="true"
+        x-show="mobileMenuOpen"
+        style="display: none;"
+    >
+        <!-- Overlay -->
+        <div 
+            class="fixed inset-0 bg-black/60 transition-opacity backdrop-blur-sm" 
+            x-show="mobileMenuOpen"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="mobileMenuOpen = false"
+        ></div>
+
+        <!-- Panel -->
+        <div 
+            class="relative w-full max-w-xs bg-white dark:bg-zinc-900 shadow-2xl flex flex-col h-full transform transition-transform"
+            x-show="mobileMenuOpen"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="-translate-x-full"
+            x-transition:enter-end="translate-x-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="-translate-x-full"
+        >
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-6 border-b border-gray-100 dark:border-zinc-800">
+                <span class="text-xl font-bold uppercase tracking-tight text-black dark:text-white">
+                    GEO<span class="text-yellow-500">RYTHM</span>
+                </span>
+                <button @click="mobileMenuOpen = false" class="text-gray-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Links -->
+            <nav class="flex-1 px-6 py-8 space-y-6 overflow-y-auto bg-white dark:bg-zinc-900">
+                <a href="{{ route('products.index') }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
+                    All Products
+                </a>
+                <a href="{{ route('products.index', ['category' => 'natgeo']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
+                    NatGeo
+                </a>
+                <a href="{{ route('products.index', ['category' => 'tnf']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
+                    TNF
+                </a>
+                <a href="{{ route('products.index', ['category' => 'arcteryx']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
+                    Arcteryx
+                </a>
+                <a href="{{ route('products.index', ['category' => 'columbia']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
+                    Columbia
+                </a>
+                <div class="pt-6 border-t border-gray-100 dark:border-zinc-800 space-y-4">
+                    <a href="{{ route('cart.index') }}" class="block text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400 hover:text-yellow-500 transition-colors">
+                        Your Cart
+                    </a>
+                    <a href="{{ route('customer.lookbook') }}" class="block text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400 hover:text-yellow-500 transition-colors">
+                        Lookbook
+                    </a>
+                    <a href="{{ route('customer.story') }}" class="block text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400 hover:text-yellow-500 transition-colors">
+                        Our Story
+                    </a>
+                </div>
+            </nav>
+
+            <div class="p-6 border-t border-gray-100 dark:border-zinc-800">
+                <a href="{{ route('account.index') }}" class="flex items-center space-x-3 text-gray-900 dark:text-white font-bold uppercase tracking-widest text-sm">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span>My Account</span>
+                </a>
             </div>
         </div>
     </div>

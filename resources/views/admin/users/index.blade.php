@@ -3,12 +3,12 @@
 @section('title', __('admin.users'))
 
 @section('content')
-<div class="mb-4" style="display: flex; justify-content: space-between; align-items: flex-end;">
+<div class="header-actions">
     <div>
-        <h2 class="page-title" style="margin-bottom: 5px;">{{ __('admin.users') }}</h2>
-        <p class="page-subtitle" style="margin-bottom: 0;">{{ __('admin.manage_users') }}</p>
+        <h2 class="page-title">{{ __('admin.users') }}</h2>
+        <p class="page-subtitle">{{ __('admin.manage_users') }}</p>
     </div>
-    <button onclick="openAddUserModal()" style="background-color: #00D1FF; color: #fff; border: 1px solid #000; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 4px 4px 0px #000;">
+    <button onclick="openAddUserModal()" style="background-color: #00D1FF; color: #fff; border: 1px solid #000; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 4px 4px 0px #000;">
         <i class="fa-solid fa-plus"></i> {{ __('admin.add_admin_officer') }}
     </button>
 </div>
@@ -17,45 +17,47 @@
 <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-top: 20px;">
     
     <!-- Status Tabs -->
-    <div style="background-color: var(--nav-hover-bg); padding: 6px; border-radius: 12px; width: fit-content; display: flex; gap: 5px; margin-bottom: 25px; border: 1px solid var(--border-color);">
-        <button class="tab-btn active" data-role="all" style="padding: 8px 25px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: var(--bg-card); color: var(--text-title);">{{ __('admin.all') }} {{ __('admin.users') }}</button>
-        <button class="tab-btn" data-role="Customer" style="padding: 8px 25px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">{{ __('admin.role_customer') }}</button>
-        <button class="tab-btn" data-role="Admin" style="padding: 8px 25px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">{{ __('admin.role_admin') }}</button>
-        <button class="tab-btn" data-role="Officer" style="padding: 8px 25px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">{{ __('admin.role_officer') }}</button>
+    <div style="background-color: var(--nav-hover-bg); padding: 6px; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 25px; border: 1px solid var(--border-color);">
+        <button class="tab-btn active" data-role="all" style="padding: 8px 15px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: var(--bg-card); color: var(--text-title); min-width: 100px;">{{ __('admin.all') }}</button>
+        <button class="tab-btn" data-role="Customer" style="padding: 8px 15px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted); min-width: 100px;">{{ __('admin.role_customer') }}</button>
+        <button class="tab-btn" data-role="Admin" style="padding: 8px 15px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted); min-width: 100px;">{{ __('admin.role_admin') }}</button>
+        <button class="tab-btn" data-role="Officer" style="padding: 8px 15px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted); min-width: 100px;">{{ __('admin.role_officer') }}</button>
     </div>
 
-    <!-- Table -->
-    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr style="border-bottom: 2px solid var(--border-color);">
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px;">{{ __('admin.users') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px;">{{ __('admin.role') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px; text-align: center;">{{ __('admin.actions') }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($users as $user)
-            <tr class="user-row" data-role="{{ ucfirst($user->role) }}" style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 20px 10px;">
-                    <div style="font-weight: 700; color: var(--text-title); font-size: 15px;">{{ $user->name }}</div>
-                    <div style="font-size: 12px; color: var(--text-muted);">{{ $user->email }}</div>
-                </td>
-                <td style="padding: 20px 10px; font-weight: 400; color: var(--text-main);">{{ __('admin.role_' . strtolower($user->role)) }}</td>
-                <td style="padding: 20px 10px; text-align: center;">
-                    <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
-                        <a href="javascript:void(0)" onclick='openEditRoleModal({!! json_encode(["id" => $user->id, "name" => $user->name, "role" => __("admin.role_" . strtolower($user->role))]) !!})' style="color: var(--text-main); font-size: 20px;"><i class="fa-regular fa-pen-to-square"></i></a>
-                        <a href="javascript:void(0)" onclick='openDeleteModal({!! json_encode(["id" => $user->id, "name" => $user->name]) !!})' style="color: #EE4444; font-size: 20px;"><i class="fa-solid fa-trash-can"></i></a>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <!-- Table Container -->
+    <div class="table-container" style="border: none; margin-top: 0; box-shadow: none;">
+        <table class="responsive-table">
+            <thead>
+                <tr>
+                    <th>{{ __('admin.users') }}</th>
+                    <th>{{ __('admin.role') }}</th>
+                    <th style="text-align: center;">{{ __('admin.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($users as $user)
+                <tr class="user-row" data-role="{{ ucfirst($user->role) }}">
+                    <td>
+                        <div style="font-weight: 700; color: var(--text-title); font-size: 15px;">{{ $user->name }}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">{{ $user->email }}</div>
+                    </td>
+                    <td style="font-weight: 400; color: var(--text-main);">{{ __('admin.role_' . strtolower($user->role)) }}</td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+                            <a href="javascript:void(0)" onclick='openEditRoleModal({!! json_encode(["id" => $user->id, "name" => $user->name, "role" => __("admin.role_" . strtolower($user->role))]) !!})' style="color: var(--text-main); font-size: 20px;"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a href="javascript:void(0)" onclick='openDeleteModal({!! json_encode(["id" => $user->id, "name" => $user->name]) !!})' style="color: #EE4444; font-size: 20px;"><i class="fa-solid fa-trash-can"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Add User Modal -->
-<div id="addUserModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-    <div style="background: #fff; width: 500px; border-radius: 20px; position: relative; border: 2px solid #000; box-shadow: 10px 10px 0px #000; padding: 40px;">
+<div id="addUserModal" class="modal-container" style="display: none;">
+    <div class="modal-content" style="max-width: 500px;">
         <button onclick="closeAddUserModal()" style="position: absolute; right: 20px; top: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #000;">
             <i class="fa-solid fa-xmark"></i>
         </button>
@@ -104,8 +106,8 @@
 </div>
 
 <!-- Edit Role Modal -->
-<div id="editRoleModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-    <div style="background: #fff; width: 450px; border-radius: 20px; position: relative; border: 2px solid #000; box-shadow: 10px 10px 0px #000; padding: 40px;">
+<div id="editRoleModal" class="modal-container" style="display: none;">
+    <div class="modal-content" style="max-width: 450px;">
         <button onclick="closeEditRoleModal()" style="position: absolute; right: 20px; top: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #000;">
             <i class="fa-solid fa-xmark"></i>
         </button>
@@ -140,8 +142,8 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-    <div style="background: #fff; width: 400px; border-radius: 20px; position: relative; border: 2px solid #000; box-shadow: 10px 10px 0px #000; padding: 40px; text-align: center;">
+<div id="deleteModal" class="modal-container" style="display: none;">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
         <div style="width: 80px; height: 80px; background: #FFEA00; border: 2px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; box-shadow: 4px 4px 0px #000;">
             <i class="fa-solid fa-trash-can" style="font-size: 35px; color: #000;"></i>
         </div>
@@ -155,8 +157,8 @@
 </div>
 
 <!-- Success Modal -->
-<div id="successModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1100; backdrop-filter: blur(4px);">
-    <div style="background: #fff; width: 400px; border-radius: 20px; position: relative; border: 2px solid #000; box-shadow: 10px 10px 0px #000; padding: 40px; text-align: center;">
+<div id="successModal" class="modal-container" style="display: none;">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
         <div style="width: 80px; height: 80px; background: #4ADE80; border: 2px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; box-shadow: 4px 4px 0px #000;">
             <i class="fa-solid fa-check" style="font-size: 40px; color: #000;"></i>
         </div>

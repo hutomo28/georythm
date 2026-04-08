@@ -15,6 +15,7 @@ class Order extends Model
         'shipping_phone',
         'order_number',
         'status',
+        'cancellation_reason',
         'total',
         'shipping_address',
         'shipping_apartment',
@@ -50,7 +51,7 @@ class Order extends Model
      */
     public function getFormattedTotalAttribute(): string
     {
-        return 'Rp' . number_format($this->total, 0, ',', '.');
+        return 'Rp'.number_format((float)$this->total, 0, ',', '.');
     }
 
     /**
@@ -79,7 +80,7 @@ class Order extends Model
                 'arrived' => 'Pesanan Tiba',
                 'completed' => 'Selesai',
                 'cancelled' => 'Dibatalkan',
-            ]
+            ],
         ];
 
         return $labels[$lang][$this->status] ?? $this->status;
@@ -90,15 +91,12 @@ class Order extends Model
      */
     public function getTrackingLinkAttribute(): string
     {
-        if (!$this->receipt_number || !$this->delivery_service) {
+        if (! $this->receipt_number) {
             return '#';
         }
 
-        return match (strtoupper($this->delivery_service)) {
-                'JNE' => 'https://jne.co.id/tracking-package',
-                'JNT' => 'https://jet.co.id/track',
-                'ANTERAJA' => 'https://anteraja.id/id/tracking/' . $this->receipt_number,
-                default => '#',
-            };
+        // Use CekResi.com as the unified tracking aggregator for all couriers
+        // It automatically detects JNE, J&T, SiCepat, Anteraja, etc.
+        return 'https://cekresi.com/?noresi='.$this->receipt_number;
     }
 }

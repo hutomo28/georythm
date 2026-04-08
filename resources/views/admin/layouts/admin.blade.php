@@ -19,29 +19,29 @@
     <style>
         /* ── CSS Variables ── */
         :root {
-            --bg-page:      #f8f9fa;
+            --bg-page:      #f4f6f8;
             --bg-sidebar:   #ffffff;
             --bg-topbar:    #ffffff;
-            --bg-content:   #f8f9fa;
+            --bg-content:   #f4f6f8;
             --bg-card:      #ffffff;
-            --border-color: #e0e0e0;
-            --text-main:    #333;
-            --text-title:   #1a1a1a;
-            --text-muted:   #888;
-            --nav-hover-bg: #f0f0f0;
-            --input-bg:     transparent;
+            --border-color: #e5e7eb;
+            --text-main:    #374151;
+            --text-title:   #111827;
+            --text-muted:   #6b7280;
+            --nav-hover-bg: #f3f4f6;
+            --accent-yellow: #FFEA00;
         }
         html.dark {
-            --bg-page:      #111827;
-            --bg-sidebar:   #1f2937;
-            --bg-topbar:    #1f2937;
-            --bg-content:   #111827;
-            --bg-card:      #1f2937;
-            --border-color: #374151;
-            --text-main:    #e5e7eb;
-            --text-title:   #ffffff;
-            --text-muted:   #9ca3af;
-            --nav-hover-bg: #374151;
+            --bg-page:      #0f172a;
+            --bg-sidebar:   #1e293b;
+            --bg-topbar:    #1e293b;
+            --bg-content:   #0f172a;
+            --bg-card:      #1e293b;
+            --border-color: #334155;
+            --text-main:    #cbd5e1;
+            --text-title:   #f1f5f9;
+            --text-muted:   #94a3b8;
+            --nav-hover-bg: #334155;
         }
 
         body {
@@ -55,6 +55,14 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* ── Global Dark Mode Refinements ── */
+        .dark .status-badge, .dark [style*="background-color: #dcfce7"] { background-color: #064e3b !important; color: #34d399 !important; }
+        .dark .status-completed, .dark [style*="background-color: #4ADE80"] { background-color: #064e3b !important; color: #34d399 !important; }
+        .dark .status-processing, .dark [style*="background-color: #dbeafe"] { background-color: #1e3a8a !important; color: #93c5fd !important; }
+        .dark .status-shipped, .dark [style*="background-color: #3B82F6"] { background-color: #1e3a8a !important; color: #93c5fd !important; }
+        .dark [style*="background-color: #fee2e2"] { background-color: #7f1d1d !important; color: #fca5a5 !important; }
+        .dark [style*="background-color: #fef9c3"] { background-color: #713f12 !important; color: #fde047 !important; }
+
         /* Sidebar Styles */
         .sidebar {
             width: 280px;
@@ -62,19 +70,14 @@
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 40px 20px;
+            padding: 30px 20px;
             position: fixed;
             height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
             box-sizing: border-box;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        .sidebar h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 50px;
-            padding-left: 10px;
-            color: var(--text-main);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
         }
 
         .nav-links {
@@ -85,35 +88,37 @@
         }
 
         .nav-item {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
+            padding: 12px 18px;
             text-decoration: none;
             color: var(--text-main);
             font-weight: 700;
-            font-size: 18px;
-            border-radius: 8px;
-            transition: all 0.3s;
+            font-size: 15px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
 
         .nav-link i {
-            margin-right: 15px;
-            width: 25px;
+            margin-right: 12px;
+            width: 20px;
             text-align: center;
-            font-size: 22px;
+            font-size: 18px;
         }
 
         .nav-link:hover {
             background-color: var(--nav-hover-bg);
+            transform: translateX(5px);
         }
 
         .nav-link.active {
-            background-color: #FFEA00;
+            background-color: var(--accent-yellow);
             color: #000;
+            box-shadow: 0 4px 15px rgba(255, 234, 0, 0.3);
         }
 
         .logout-btn {
@@ -124,8 +129,9 @@
             text-decoration: none;
             color: var(--text-muted);
             font-weight: 700;
-            font-size: 18px;
+            font-size: 16px;
             transition: color 0.3s;
+            border-top: 1px solid var(--border-color);
         }
 
         .logout-btn i {
@@ -142,6 +148,8 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            min-width: 0; /* Fix flexbox overflow */
+            transition: margin-left 0.3s ease;
         }
 
         .top-bar {
@@ -151,9 +159,74 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0 40px;
-            position: relative;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
             transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: absolute;
+            left: 20px;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 950;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .top-bar {
+                padding: 0 60px;
+            }
+            .admin-profile {
+                right: 20px;
+            }
+            .admin-profile span:not(.role-label) {
+                display: none; /* Hide name on small mobile if needed */
+            }
+        }
+
+        @media (max-width: 640px) {
+            .logo {
+                font-size: 20px;
+            }
+            .admin-profile {
+                gap: 8px;
+            }
+            .content-area {
+                padding: 20px;
+            }
+            h2.page-title {
+                font-size: 24px;
+            }
         }
 
         .logo {
@@ -169,12 +242,12 @@
         .admin-profile {
             position: absolute;
             right: 40px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .admin-profile span {
@@ -205,6 +278,7 @@
             background-color: var(--bg-content);
             flex-grow: 1;
             transition: background-color 0.3s;
+            min-height: calc(100vh - 80px);
         }
 
         h2.page-title {
@@ -219,6 +293,84 @@
             font-style: italic;
             margin-bottom: 40px;
         }
+
+        /* Utility Classes for Responsiveness */
+        .table-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow-x: auto;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .responsive-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 800px; /* Force scroll on mobile */
+        }
+
+        .responsive-table th, .responsive-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .responsive-table th {
+            font-weight: 700;
+            color: var(--text-title);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background-color: var(--nav-hover-bg);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .header-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .modal-container {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+            border: 2px solid var(--border-color);
+            box-shadow: 10px 10px 0px var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 20px;
+                box-shadow: 5px 5px 0px var(--border-color);
+            }
+        }
     </style>
 </head>
 <body>
@@ -226,7 +378,10 @@
         $routePrefix = auth()->user()->isAdmin() ? 'admin' : 'officer';
         $pageTitle = auth()->user()->isAdmin() ? 'Admin Page' : 'Officer Page';
     @endphp
-    <div class="sidebar">
+
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <div id="admin-sidebar" class="sidebar">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h1 style="margin: 0; font-size: 24px; font-weight: 700;">GEO<span style="color: #FFD700;">RYTHM</span></h1>
             <div style="display: flex; gap: 8px;">
@@ -274,6 +429,9 @@
 
     <div class="main-content">
         <div class="top-bar">
+            <button id="sidebar-toggle" class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <div class="logo">
                 <span class="geo">GEO</span><span class="rythm">RYTHM</span>
             </div>
@@ -318,6 +476,29 @@
                 const isDark = !html.classList.contains('dark');
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
                 applyAdminTheme(isDark);
+            });
+
+            // ── Sidebar Toggle ──────────────────────────────────────
+            const sidebar       = document.getElementById('admin-sidebar');
+            const overlay       = document.getElementById('sidebar-overlay');
+            const toggleBtn     = document.getElementById('sidebar-toggle');
+            const navLinks      = sidebar.querySelectorAll('.nav-link');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+
+            toggleBtn.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            // Close sidebar on navigation (useful for mobile)
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) {
+                        toggleSidebar();
+                    }
+                });
             });
         })();
     </script>

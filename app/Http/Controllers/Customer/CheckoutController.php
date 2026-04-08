@@ -40,7 +40,7 @@ class CheckoutController extends Controller
                 'jakarta', 'dki jakarta', 'banten',
                 'jawa tengah', 'central java',
                 'jawa timur', 'east java',
-                'yogyakarta', 'di yogyakarta'
+                'yogyakarta', 'di yogyakarta',
             ];
 
             $isOtherJava = false;
@@ -53,11 +53,9 @@ class CheckoutController extends Controller
 
             if ($isJawaBarat) {
                 $shipping = 14000;
-            }
-            elseif ($isOtherJava) {
+            } elseif ($isOtherJava) {
                 $shipping = 22000; // 14k + 8k
-            }
-            else {
+            } else {
                 $shipping = 39000; // 14k + 25k
             }
         }
@@ -80,7 +78,7 @@ class CheckoutController extends Controller
         }
 
         $address = $user->defaultAddress();
-        if (!$address) {
+        if (! $address) {
             return redirect()->route('address.create')->with('error', 'Please add a shipping address first.');
         }
 
@@ -96,7 +94,7 @@ class CheckoutController extends Controller
             'jakarta', 'dki jakarta', 'banten',
             'jawa tengah', 'central java',
             'jawa timur', 'east java',
-            'yogyakarta', 'di yogyakarta'
+            'yogyakarta', 'di yogyakarta',
         ];
 
         $isOtherJava = false;
@@ -109,19 +107,35 @@ class CheckoutController extends Controller
 
         if ($isJawaBarat) {
             $shipping = 14000;
-        }
-        elseif ($isOtherJava) {
+        } elseif ($isOtherJava) {
             $shipping = 22000; // 14k + 8k
-        }
-        else {
+        } else {
             $shipping = 39000; // 14k + 25k
         }
 
         $total = $subtotal + $shipping;
 
-        return DB::transaction(function () use ($user, $cartItems, $address, $subtotal, $shipping, $total, $request) {
-            if (!$address) {
+        return DB::transaction(function () use ($user, $cartItems, $address, $shipping, $total, $request) {
+            if (! $address) {
                 throw new \Exception('Shipping address not found.');
+            }
+
+            // Check stock before creating order
+            foreach ($cartItems as $cartItem) {
+                $product = $cartItem->product;
+                if (! $product) {
+                    throw new \Exception("A product in your cart is unavailable.");
+                }
+
+                $sizeStock = $product->stock;
+                $sizeRecord = $product->sizes()->where('size', $cartItem->size)->first();
+                if ($sizeRecord) {
+                    $sizeStock = $sizeRecord->stock;
+                }
+
+                if ($sizeStock < $cartItem->quantity) {
+                    throw new \Exception("Product '{$product->name}' (Size: {$cartItem->size}) is out of stock or has insufficient quantity.");
+                }
             }
 
             // 1. Create Order
@@ -129,10 +143,10 @@ class CheckoutController extends Controller
                 'user_id' => $user->id,
                 'shipping_name' => $address->full_name,
                 'shipping_phone' => $address->phone,
-                'order_number' => 'ORD-' . strtoupper(uniqid()),
+                'order_number' => 'ORD-'.strtoupper(uniqid()),
                 'total' => $total,
                 'status' => 'waiting-payment',
-                'shipping_address' => $address->address . ', ' . $address->city . ', ' . $address->province . ' ' . $address->zip,
+                'shipping_address' => $address->address.', '.$address->city.', '.$address->province.' '.$address->zip,
                 'shipping_apartment' => $address->apartment,
                 'shipping_city' => $address->city,
                 'shipping_province' => $address->province,
@@ -141,9 +155,9 @@ class CheckoutController extends Controller
                 'shipping_cost' => $shipping,
             ]);
 
-            // 2. Create Order Items
+            // 2. Create Order Items & Decrement Stock
             foreach ($cartItems as $cartItem) {
-                if (!$cartItem->product) {
+                if (! $cartItem->product) {
                     continue;
                 }
 
@@ -157,8 +171,13 @@ class CheckoutController extends Controller
                     'subtotal' => $cartItem->product->price * $cartItem->quantity,
                 ]);
 
-                // 3. Subtract stock
-                $cartItem->product->decrement('stock', $cartItem->quantity);
+                // Decrement stock
+                $sizeRecord = $cartItem->product->sizes()->where('size', $cartItem->size)->first();
+                if ($sizeRecord) {
+                    $sizeRecord->decrement('stock', $cartItem->quantity);
+                } else {
+                    $cartItem->product->decrement('stock', $cartItem->quantity);
+                }
             }
 
             // 4. Create Payment Placeholder

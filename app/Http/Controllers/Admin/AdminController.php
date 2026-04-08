@@ -40,7 +40,25 @@ class AdminController extends Controller
             ->with('product')
             ->get();
 
+        // Recently Rated Products (Top Rated)
+        $topRatedProducts = \App\Models\Product::withCount('reviews')
+            ->has('reviews')
+            ->get()
+            ->map(function($product) {
+                $product->avg_rating = $product->averageRating();
+                return $product;
+            })
+            ->sortByDesc('avg_rating')
+            ->take(5);
+
+        // Recent customer reviews
+        $recentReviews = \App\Models\Review::with(['user', 'product'])
+            ->latest()
+            ->limit(6)
+            ->get();
+
         $routePrefix = $this->routePrefix();
+
         return view('admin.dashboard', compact(
             'moneyIn',
             'moneyOut',
@@ -49,6 +67,8 @@ class AdminController extends Controller
             'totalUsers',
             'totalProducts',
             'topSellingItems',
+            'topRatedProducts',
+            'recentReviews',
             'routePrefix'
         ));
     }
@@ -70,6 +90,7 @@ class AdminController extends Controller
             ->paginate(15);
 
         $routePrefix = $this->routePrefix();
+
         return view('admin.finance.index', compact(
             'moneyIn',
             'moneyOut',
@@ -84,8 +105,9 @@ class AdminController extends Controller
      */
     public function products()
     {
-        $products = \App\Models\Product::latest()->paginate(10);
+        $products = \App\Models\Product::with('sizes')->latest()->paginate(10);
         $routePrefix = $this->routePrefix();
+
         return view('admin.products.index', compact('products', 'routePrefix'));
     }
 
@@ -95,6 +117,7 @@ class AdminController extends Controller
     public function create()
     {
         $routePrefix = $this->routePrefix();
+
         return view('admin.products.create', compact('routePrefix'));
     }
 
@@ -106,17 +129,20 @@ class AdminController extends Controller
         // Validation for multiple images
         // Sanitize price before validation
         $request->merge([
-            'price' => str_replace(['Rp', '.', ','], '', $request->price)
+            'price' => str_ireplace(['Rp', '.', ','], '', $request->price),
         ]);
 
         $request->validate([
             'name' => 'required|string|max:255',
             'brand' => 'required|string|max:255',
             'price' => 'required|numeric|min:0|max:99999999999999',
-            'stock' => 'required|integer|min:0',
+            'sizes' => 'required|array',
+            'sizes.*' => 'required|integer|min:0',
             'images' => 'required|array|min:1|max:3',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
+
+        $totalStock = array_sum($request->sizes);
 
         // Create Product
         $productData = [
@@ -124,13 +150,13 @@ class AdminController extends Controller
             'brand' => $request->brand,
             'category' => $request->brand, // Map brand to category as per our convention
             'price' => $request->price,
-            'stock' => $request->stock,
+            'stock' => $totalStock,
             'description' => $request->description,
         ];
 
         // Create directory if not exists
         $uploadPath = public_path('products');
-        if (!file_exists($uploadPath)) {
+        if (! file_exists($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
 
@@ -141,16 +167,24 @@ class AdminController extends Controller
 
             foreach ($images as $index => $file) {
                 if ($index < 3) {
-                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filename = time().'_'.$file->getClientOriginalName();
                     $file->move($uploadPath, $filename);
                     $productData[$fields[$index]] = $filename;
                 }
             }
         }
 
-        \App\Models\Product::create($productData);
+        $product = \App\Models\Product::create($productData);
 
-        return redirect()->route($this->routePrefix() . '.products')->with('success', 'Product added successfully!');
+        foreach ($request->sizes as $size => $stock) {
+            \App\Models\ProductSize::create([
+                'product_id' => $product->id,
+                'size' => $size,
+                'stock' => $stock
+            ]);
+        }
+
+        return redirect()->route($this->routePrefix().'.products')->with('success', 'Product added successfully!');
     }
 
     /**
@@ -159,8 +193,35 @@ class AdminController extends Controller
     public function destroy($id)
     {
         $product = \App\Models\Product::findOrFail($id);
+        
+        // Remove from users' carts so it doesn't crash the frontend
+        \App\Models\Cart::where('product_id', $product->id)->delete();
+        
         $product->delete();
-        return redirect()->route($this->routePrefix() . '.products')->with('delete_success', 'Product deleted successfully!');
+
+        return redirect()->route($this->routePrefix().'.products')->with('delete_success', 'Product deleted (archived) successfully!');
+    }
+
+    /**
+     * Display deleted products.
+     */
+    public function deletedProducts()
+    {
+        $products = \App\Models\Product::onlyTrashed()->latest()->paginate(10);
+        $routePrefix = $this->routePrefix();
+
+        return view('admin.products.deleted', compact('products', 'routePrefix'));
+    }
+
+    /**
+     * Restore a deleted product.
+     */
+    public function restoreProduct($id)
+    {
+        $product = \App\Models\Product::onlyTrashed()->findOrFail($id);
+        $product->restore();
+
+        return redirect()->route($this->routePrefix().'.products.deleted')->with('success', 'Product restored successfully!');
     }
 
     /**
@@ -170,50 +231,81 @@ class AdminController extends Controller
     {
         // Sanitize price before validation
         $request->merge([
-            'price' => str_replace(['Rp', '.', ','], '', $request->price)
+            'price' => str_ireplace(['Rp', '.', ','], '', $request->price),
         ]);
 
         $request->validate([
             'name' => 'required|string|max:255',
             'brand' => 'required|string|max:255',
             'price' => 'required|numeric|min:0|max:99999999999999',
-            'stock' => 'required|integer|min:0',
+            'sizes' => 'required|array',
+            'sizes.*' => 'required|integer|min:0',
             'description' => 'nullable|string',
+            'image_slot_1' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image_slot_2' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image_slot_3' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         $product = \App\Models\Product::findOrFail($id);
+        $totalStock = array_sum($request->sizes);
 
         $productData = [
             'name' => $request->name,
             'brand' => $request->brand,
             'category' => $request->brand,
             'price' => $request->price,
-            'stock' => $request->stock,
+            'stock' => $totalStock,
             'description' => $request->description,
         ];
 
+        // Handle Image Deletion
+        if ($request->has('delete_image_1') && $request->delete_image_1 == 1) {
+            $productData['image'] = null;
+        }
+        if ($request->has('delete_image_2') && $request->delete_image_2 == 1) {
+            $productData['image2'] = null;
+        }
+        if ($request->has('delete_image_3') && $request->delete_image_3 == 1) {
+            $productData['image3'] = null;
+        }
+
         // Create directory if not exists
         $uploadPath = public_path('products');
-        if (!file_exists($uploadPath)) {
+        if (! file_exists($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
 
-        if ($request->hasFile('images')) {
-            $images = $request->file('images');
-            $fields = ['image', 'image2', 'image3'];
-
-            foreach ($images as $index => $file) {
-                if ($index < 3) {
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $file->move($uploadPath, $filename);
-                    $productData[$fields[$index]] = $filename;
-                }
+        // Handle Image Uploads (Slotted)
+        for ($i = 1; $i <= 3; $i++) {
+            $slotName = "image_slot_$i";
+            if ($request->hasFile($slotName)) {
+                $file = $request->file($slotName);
+                $cleanName = str_replace([' ', '/', '\\'], '_', $file->getClientOriginalName());
+                $filename = time()."_$i"."_$cleanName";
+                $file->move($uploadPath, $filename);
+                
+                $field = $i === 1 ? 'image' : "image$i";
+                $productData[$field] = $filename;
             }
         }
 
         $product->update($productData);
 
-        return redirect()->route($this->routePrefix() . '.products')->with('update_success', 'Product updated successfully!');
+        foreach ($request->sizes as $size => $stock) {
+            \App\Models\ProductSize::updateOrCreate(
+                ['product_id' => $product->id, 'size' => $size],
+                ['stock' => $stock]
+            );
+        }
+
+        // Debug log (can be seen in laravel.log)
+        \Illuminate\Support\Facades\Log::info("Product Update", [
+            'id' => $id,
+            'received_files' => $request->allFiles(),
+            'product_data' => $productData
+        ]);
+
+        return redirect()->route($this->routePrefix().'.products')->with('update_success', 'Product updated successfully!');
     }
 
     /**
@@ -222,13 +314,21 @@ class AdminController extends Controller
     public function addStock(Request $request, $id)
     {
         $request->validate([
+            'size' => 'required|string|in:S,M,L,XL',
             'amount' => 'required|integer|min:1',
             'description' => 'nullable|string|max:255',
         ]);
 
         $product = \App\Models\Product::findOrFail($id);
 
-        // Update product stock
+        // Update size stock
+        $productSize = \App\Models\ProductSize::firstOrCreate(
+            ['product_id' => $product->id, 'size' => $request->size],
+            ['stock' => 0]
+        );
+        $productSize->increment('stock', $request->amount);
+
+        // Update total product stock
         $product->increment('stock', $request->amount);
 
         // Log the change
@@ -236,7 +336,7 @@ class AdminController extends Controller
             'product_id' => $product->id,
             'amount' => $request->amount,
             'type' => 'in',
-            'description' => $request->description ?: 'Manual stock addition',
+            'description' => ($request->description ?: 'Manual stock addition') . " (Size: {$request->size})",
         ]);
 
         return redirect()->back()->with('success', 'Stock added successfully and logged!');
@@ -251,13 +351,13 @@ class AdminController extends Controller
             ->latest()
             ->get()
             ->map(function ($log) {
-            return [
-            'date' => $log->created_at->format('d M Y H:i'),
-            'amount' => $log->amount,
-            'type' => $log->type,
-            'description' => $log->description,
-            ];
-        });
+                return [
+                    'date' => $log->created_at->format('d M Y H:i'),
+                    'amount' => $log->amount,
+                    'type' => $log->type,
+                    'description' => $log->description,
+                ];
+            });
 
         return response()->json($history);
     }
@@ -269,6 +369,7 @@ class AdminController extends Controller
     {
         $orders = \App\Models\Order::with(['user', 'items.product'])->latest()->paginate(10);
         $routePrefix = $this->routePrefix();
+
         return view('admin.orders.index', compact('orders', 'routePrefix'));
     }
 
@@ -279,6 +380,7 @@ class AdminController extends Controller
     {
         $users = \App\Models\User::latest()->paginate(10);
         $routePrefix = $this->routePrefix();
+
         return view('admin.users.index', compact('users', 'routePrefix'));
     }
 
@@ -297,7 +399,7 @@ class AdminController extends Controller
         $order = \App\Models\Order::findOrFail($id);
         $order->update(['status' => $request->status]);
 
-        return redirect()->route($this->routePrefix() . '.orders')->with('success', 'Order status updated successfully!');
+        return redirect()->route($this->routePrefix().'.orders')->with('success', 'Order status updated successfully!');
     }
 
     /**
@@ -316,7 +418,7 @@ class AdminController extends Controller
             'delivery_service' => $request->delivery_service ?? 'JNE',
         ]);
 
-        return redirect()->route($this->routePrefix() . '.orders')->with('success', 'Shipping info updated!');
+        return redirect()->route($this->routePrefix().'.orders')->with('success', 'Shipping info updated!');
     }
 
     /**
@@ -338,7 +440,7 @@ class AdminController extends Controller
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
         ]);
 
-        return redirect()->route($this->routePrefix() . '.users')->with('success', 'User created successfully!');
+        return redirect()->route($this->routePrefix().'.users')->with('success', 'User created successfully!');
     }
 
     /**
@@ -354,6 +456,7 @@ class AdminController extends Controller
         }
 
         $user->delete();
-        return redirect()->route($this->routePrefix() . '.users')->with('success', 'User deleted successfully!');
+
+        return redirect()->route($this->routePrefix().'.users')->with('success', 'User deleted successfully!');
     }
 }

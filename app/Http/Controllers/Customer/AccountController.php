@@ -29,9 +29,9 @@ class AccountController extends Controller
             'arrived' => $user->orders()->where('status', 'arrived')->count(),
         ];
 
-        // Get completed orders (history) with their items and products
+        // Get completed + cancelled orders (history) with their items and products
         $completedOrders = $user->orders()
-            ->where('status', 'completed')
+            ->whereIn('status', ['completed', 'cancelled'])
             ->with(['items.product'])
             ->latest()
             ->get();

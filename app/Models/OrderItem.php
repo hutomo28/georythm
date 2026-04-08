@@ -29,7 +29,7 @@ class OrderItem extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     /**
@@ -37,6 +37,6 @@ class OrderItem extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return 'RP' . number_format($this->price, 0, ',', '.');
+        return 'RP'.number_format($this->price, 0, ',', '.');
     }
 }

@@ -33,9 +33,10 @@
             <div>
                 <h3 class="text-sm font-bold uppercase tracking-wider mb-4 text-gray-200">Newsletter</h3>
                 <p class="text-gray-400 text-sm mb-4">Subscribe for latest drops and exclusive offers.</p>
-                <form class="flex flex-col space-y-2">
-                    <input type="email" placeholder="Email address" class="bg-gray-900 border border-gray-800 text-white px-4 py-2 text-sm focus:outline-none focus:border-yellow-500 transition-colors" />
-                    <button type="button" class="bg-white text-black font-semibold px-4 py-2 text-sm uppercase tracking-wide hover:bg-yellow-500 hover:text-white transition-colors">
+                <form action="#" method="POST" class="flex flex-col space-y-2">
+                    @csrf
+                    <input type="email" name="email" required placeholder="Email address" class="bg-gray-900 border border-gray-800 text-white px-4 py-2 text-sm focus:outline-none focus:border-yellow-500 transition-colors" />
+                    <button type="submit" class="bg-white text-black font-semibold px-4 py-2 text-sm uppercase tracking-wide hover:bg-yellow-500 hover:text-white transition-colors">
                         Subscribe
                     </button>
                 </form>

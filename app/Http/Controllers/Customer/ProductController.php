@@ -14,6 +14,7 @@ class ProductController extends Controller
     public function welcome()
     {
         $newArrivals = Product::latest()->limit(4)->get();
+
         return view('customer.welcome', compact('newArrivals'));
     }
 
@@ -55,7 +56,7 @@ class ProductController extends Controller
         }
 
         // Handle Search Query
-        if ($request->has('q') && !empty($request->q)) {
+        if ($request->has('q') && ! empty($request->q)) {
             $search = $request->q;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
@@ -67,12 +68,15 @@ class ProductController extends Controller
 
         $products = $query->latest()->get()->map(function ($product) {
             return [
-            'id' => $product->id,
-            'name' => $product->name,
-            'brand' => $product->category,
-            'image' => $product->image,
-            'image2' => $product->image2,
-            'price' => $product->formatted_price,
+                'id' => $product->id,
+                'name' => $product->name,
+                'brand' => $product->category,
+                'image' => $product->image,
+                'image2' => $product->image2,
+                'price' => $product->formatted_price,
+                'rating' => $product->averageRating(),
+                'reviews_count' => $product->reviewsCount(),
+                'stock' => $product->stock,
             ];
         });
 
@@ -87,8 +91,11 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         // Add some dummy data for the detail page if needed, or just pass the model
-        $product->formatted_price = 'Rp ' . number_format($product->price, 0, ',', '.');
+        $product->formatted_price = 'Rp '.number_format((float)$product->price, 0, ',', '.');
 
-        return view('customer.products.show', compact('product'));
+        // Fetch 6 random products as related products (excluding current one)
+        $relatedProducts = Product::where('id', '!=', $id)->inRandomOrder()->limit(6)->get();
+
+        return view('customer.products.show', compact('product', 'relatedProducts'));
     }
 }

@@ -14,6 +14,21 @@
             margin-bottom: 40px;
         }
 
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-value {
+                font-size: 24px;
+            }
+        }
+
         .stat-card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -57,63 +72,13 @@
             font-style: italic;
         }
 
-        .report-section {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 30px;
-            margin-top: 20px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .section-header h3 {
-            font-size: 20px;
-            font-weight: 700;
-            margin: 0;
-            color: var(--text-title);
-        }
-
-        .orders-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .orders-table th {
-            text-align: left;
-            padding: 15px;
-            border-bottom: 2px solid var(--border-color);
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        .orders-table td {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 15px;
-            vertical-align: middle;
-            color: var(--text-main);
-        }
-
-        .orders-table tr:last-child td {
-            border-bottom: none;
-        }
-
         .status-badge {
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .status-completed { background-color: #d1fae5; color: #065f46; }
@@ -148,12 +113,12 @@
         </div>
     </div>
 
-    <div class="report-section">
-        <div class="section-header">
-            <h3>{{ __('admin.recent_transactions') }}</h3>
-        </div>
+    <div class="header-actions">
+        <h3>{{ __('admin.recent_transactions') }}</h3>
+    </div>
 
-        <table class="orders-table">
+    <div class="table-container" style="margin-top: 0;">
+        <table class="responsive-table">
             <thead>
                 <tr>
                     <th>{{ __('admin.order_id') }}</th>
@@ -165,7 +130,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($recentPaidOrders as $order)
+                @forelse($recentPaidOrders  as $order)
                 <tr>
                     <td style="font-weight: 700;">#{{ $order->order_number }}</td>
                     <td>{{ $order->user->name }}</td>
@@ -185,6 +150,7 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
 
         <div class="pagination-container">
             {{ $recentPaidOrders->links() }}

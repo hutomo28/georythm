@@ -21,7 +21,7 @@ class CartController extends Controller
             return $item->product->price * $item->quantity;
         });
 
-        $totalFormatted = 'Rp ' . number_format($subtotal, 0, ',', '.');
+        $totalFormatted = 'Rp '.number_format($subtotal, 0, ',', '.');
 
         return view('customer.cart.index', compact('cartItems', 'subtotal', 'totalFormatted'));
     }
@@ -38,6 +38,15 @@ class CartController extends Controller
         ]);
 
         $user = Auth::user();
+        $product = Product::findOrFail($request->product_id);
+
+        $sizeRecord = $product->sizes()->where('size', $request->size)->first();
+        $availableStock = $sizeRecord ? $sizeRecord->stock : $product->stock;
+
+        // Block if product is out of stock
+        if ($availableStock <= 0) {
+            return redirect()->back()->with('error', "Sorry, size {$request->size} is currently out of stock.");
+        }
 
         // Check if item already exists in cart with same size
         $existingCart = Cart::where('user_id', $user->id)
@@ -46,13 +55,18 @@ class CartController extends Controller
             ->first();
 
         if ($existingCart) {
-            $existingCart->increment('quantity', $request->quantity);
-        }
-        else {
+            $newQty = $existingCart->quantity + $request->quantity;
+            // Cap quantity to available stock
+            if ($newQty > $availableStock) {
+                $newQty = $availableStock;
+            }
+            $existingCart->update(['quantity' => $newQty]);
+        } else {
+            $qty = min($request->quantity, $availableStock);
             Cart::create([
                 'user_id' => $user->id,
                 'product_id' => $request->product_id,
-                'quantity' => $request->quantity,
+                'quantity' => $qty,
                 'size' => $request->size,
             ]);
         }
@@ -74,7 +88,17 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart->update(['quantity' => $request->quantity]);
+        // Cap quantity to available stock
+        $maxStock = 0;
+        if ($cart->product) {
+            $sizeRecord = $cart->product->sizes()->where('size', $cart->size)->first();
+            $maxStock = $sizeRecord ? $sizeRecord->stock : $cart->product->stock;
+        }
+
+        $qty = min($request->quantity, $maxStock);
+        if ($qty < 1) $qty = 1;
+
+        $cart->update(['quantity' => $qty]);
 
         return redirect()->back()->with('success', 'Cart updated!');
     }

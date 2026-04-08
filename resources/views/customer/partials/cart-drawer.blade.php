@@ -42,70 +42,89 @@
         </div>
 
         <!-- Body -->
-        <div class="flex-1 overflow-y-auto px-6 py-6 space-y-8">
-            <!-- Item 1 -->
-            <div class="flex gap-4">
-                <div class="w-24 h-32 bg-gray-100 flex-shrink-0 overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Product" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xs font-bold uppercase leading-relaxed text-gray-900 mb-1">
-                            NATGEO- ATLAS WINDSTOPPER BY GORE-TEX LABS SHORT GOOSE DOWN BLACK
-                        </h3>
-                        <p class="text-red-500 font-bold text-sm mb-1">Rp6.999.000</p>
-                        <p class="text-xs text-gray-500 uppercase">XL</p>
+        <div class="flex-1 overflow-y-auto px-6 py-8 space-y-8">
+            @php $hasStockIssue = false; @endphp
+            @if(Auth::check() && Auth::user()->carts->count() > 0)
+                @foreach(Auth::user()->carts as $item)
+                @php 
+                    $isOutOfStock = ! $item->product || $item->product->stock < $item->quantity;
+                    if ($isOutOfStock) $hasStockIssue = true;
+                @endphp
+                <div class="flex gap-4 {{ $isOutOfStock ? 'opacity-75' : '' }}">
+                    <div class="w-24 h-32 bg-gray-100 flex-shrink-0 overflow-hidden relative">
+                        <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                        @if($isOutOfStock)
+                            <div class="absolute inset-0 bg-red-500/20 flex items-center justify-center">
+                                <span class="bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 uppercase tracking-widest">Incomplete</span>
+                            </div>
+                        @endif
                     </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <div class="flex items-center border border-gray-300">
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50">-</button>
-                            <span class="w-8 h-8 flex items-center justify-center text-xs font-medium">1</span>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50">+</button>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xs font-bold uppercase leading-relaxed text-gray-900 dark:text-slate-100 mb-1">
+                                {{ $item->product->name }}
+                            </h3>
+                            <p class="text-red-500 font-bold text-sm mb-1">Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>
+                            <p class="text-xs text-gray-500 uppercase tracking-widest">{{ $item->size }}</p>
+                            
+                            @if($isOutOfStock)
+                                <p class="text-[10px] text-red-500 font-bold mt-1 uppercase italic">Stock insufficient (Max: {{ $item->product->stock }})</p>
+                            @endif
                         </div>
-                        <button class="text-xs text-gray-400 hover:text-red-500 underline decoration-gray-300 hover:decoration-red-500 transition-colors">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Item 2 -->
-            <div class="flex gap-4">
-                <div class="w-24 h-32 bg-gray-100 flex-shrink-0 overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1559551409-dadc959f76b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Product" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xs font-bold uppercase leading-relaxed text-gray-900 mb-1">
-                            NATGEO- ATLAS WINDSTOPPER BY GORE-TEX LABS SHORT GOOSE DOWN White
-                        </h3>
-                        <p class="text-red-500 font-bold text-sm mb-1">Rp3.999.000</p>
-                        <p class="text-xs text-gray-500 uppercase">M</p>
-                    </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <div class="flex items-center border border-gray-300">
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50">-</button>
-                            <span class="w-8 h-8 flex items-center justify-center text-xs font-medium">1</span>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50">+</button>
+                        <div class="flex items-center justify-between mt-2">
+                            <form action="{{ route('cart.update', $item) }}" method="POST" class="flex items-center border {{ $isOutOfStock ? 'border-red-500' : 'border-gray-300 dark:border-zinc-700' }}">
+                                @csrf
+                                @method('PATCH')
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black dark:text-zinc-400 dark:hover:text-white" onclick="item_drawer_qty_{{ $item->id }}.stepDown(); this.form.submit()">-</button>
+                                <input type="number" name="quantity" id="item_drawer_qty_{{ $item->id }}" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="w-10 h-8 border-none text-center focus:ring-0 text-xs font-medium bg-transparent dark:text-white" readonly>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black dark:text-zinc-400 dark:hover:text-white" onclick="item_drawer_qty_{{ $item->id }}.stepUp(); this.form.submit()">+</button>
+                            </form>
+                            <form action="{{ route('cart.destroy', $item) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-xs text-gray-400 hover:text-red-500 underline decoration-gray-300 hover:decoration-red-500 transition-colors">{{ __('admin.delete') }}</button>
+                            </form>
                         </div>
-                        <button class="text-xs text-gray-400 hover:text-red-500 underline decoration-gray-300 hover:decoration-red-500 transition-colors">Remove</button>
                     </div>
                 </div>
-            </div>
+                @endforeach
+            @else
+                <div class="h-full flex flex-col items-center justify-center text-center">
+                    <p class="text-gray-400 uppercase tracking-widest text-sm mb-4">Your cart is empty</p>
+                    <a href="{{ route('products.index') }}" @click="cartOpen = false" class="text-black dark:text-white font-bold border-b-2 border-black dark:border-white pb-1 text-xs uppercase uppercase tracking-widest hover:text-yellow-500 hover:border-yellow-500 transition-colors">Start Shopping</a>
+                </div>
+            @endif
         </div>
 
         <!-- Footer -->
-        <div class="border-t border-gray-100 dark:border-zinc-700 px-6 py-6 bg-white dark:bg-zinc-900">
-            <div class="mb-4">
-                <label for="order-note" class="block text-sm font-medium text-gray-900 mb-2">Order Notes</label>
+        <div class="border-t border-gray-100 dark:border-zinc-700 px-6 py-6 bg-white dark:bg-zinc-900 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+            @if(Auth::check() && Auth::user()->carts->count() > 0)
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-sm font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100">Subtotal</span>
+                @php
+                    $total = Auth::user()->carts->sum(function($item) {
+                        return $item->product->price * $item->quantity;
+                    });
+                @endphp
+                <span class="text-lg font-bold text-gray-900 dark:text-white">Rp {{ number_format($total, 0, ',', '.') }}</span>
             </div>
             
-            <div class="mb-6">
-                <p class="text-sm text-gray-500 mb-4">Shipping not included</p>
-                <a href="{{ route('checkout.index') }}" class="w-full bg-black text-white py-4 font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors flex justify-between px-8">
-                    <span>Checkout</span>
-                    <span>•</span>
-                    <span>10.998.000</span>
+            <div class="space-y-3">
+                @if($hasStockIssue)
+                    <button disabled class="w-full bg-gray-200 dark:bg-zinc-800 text-gray-400 dark:text-zinc-600 py-4 font-bold uppercase tracking-widest cursor-not-allowed flex justify-center items-center">
+                        Check Out
+                    </button>
+                    <p class="text-[10px] text-red-500 text-center font-bold uppercase italic mt-2">Adjust quantities to proceed</p>
+                @else
+                    <a href="{{ route('checkout.index') }}" class="w-full bg-black dark:bg-white text-white dark:text-black py-4 font-bold uppercase tracking-widest hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors flex justify-center items-center">
+                        Check Out
+                    </a>
+                @endif
+                <a href="{{ route('cart.index') }}" class="w-full bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 text-black dark:text-white py-4 font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-zinc-700 transition-all flex justify-center items-center">
+                    View Cart
                 </a>
             </div>
+            @endif
         </div>
     </div>
 </div>

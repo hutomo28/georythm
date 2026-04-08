@@ -3,36 +3,40 @@
 @section('title', __('admin.orders'))
 
 @section('content')
-<div class="mb-4">
-    <h2 class="page-title">{{ __('admin.orders') }}</h2>
-    <p class="page-subtitle">{{ __('admin.manage_orders') }}</p>
+<div class="header-actions">
+    <div>
+        <h2 class="page-title">{{ __('admin.orders') }}</h2>
+        <p class="page-subtitle">{{ __('admin.manage_orders') }}</p>
+    </div>
 </div>
 
 <!-- Order Container -->
 <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-top: 20px;">
     
     <!-- Status Tabs -->
-    <div style="background-color: var(--nav-hover-bg); padding: 6px; border-radius: 12px; width: fit-content; display: flex; gap: 5px; margin-bottom: 25px; border: 1px solid var(--border-color);">
+    <div style="background-color: var(--nav-hover-bg); padding: 6px; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 25px; border: 1px solid var(--border-color);">
         <button class="tab-btn active" data-status="all" style="padding: 8px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: var(--bg-card); color: var(--text-title); box-shadow: 2px 2px 0px rgba(0,0,0,0.1);">{{ __('admin.all') }} {{ __('admin.orders') }}</button>
         <button class="tab-btn" data-status="waiting-payment" style="padding: 8px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">Waiting Payment</button>
         <button class="tab-btn" data-status="processing" style="padding: 8px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">Processing</button>
         <button class="tab-btn" data-status="shipped" style="padding: 8px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">Shipping</button>
         <button class="tab-btn" data-status="completed" style="padding: 8px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">Completed</button>
+        <button class="tab-btn" data-status="cancelled" style="padding: 8px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; background: transparent; color: var(--text-muted);">Cancelled</button>
     </div>
 
-    <!-- Table -->
-    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr style="border-bottom: 2px solid var(--border-color);">
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px;">{{ __('admin.customer') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px;">{{ __('admin.date') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px;">{{ __('admin.items') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px;">{{ __('admin.total') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px; text-align: center;">{{ __('admin.transaction') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px;">{{ __('admin.status') }}</th>
-                <th style="padding: 15px 10px; font-weight: 700; color: var(--text-title); font-size: 18px; text-align: center;">{{ __('admin.actions') }}</th>
-            </tr>
-        </thead>
+    <!-- Table Container -->
+    <div class="table-container" style="border: none; margin-top: 0; box-shadow: none;">
+        <table class="responsive-table">
+            <thead>
+                <tr>
+                    <th>{{ __('admin.customer') }}</th>
+                    <th>{{ __('admin.date') }}</th>
+                    <th>{{ __('admin.items') }}</th>
+                    <th>{{ __('admin.total') }}</th>
+                    <th style="text-align: center;">{{ __('admin.transaction') }}</th>
+                    <th>{{ __('admin.status') }}</th>
+                    <th style="text-align: center;">{{ __('admin.actions') }}</th>
+                </tr>
+            </thead>
         <tbody>
             @foreach($orders as $order)
             @php
@@ -66,9 +70,15 @@
                     @endif
                 </td>
                 <td style="padding: 20px 10px;">
-                    <span style="background-color: {{ $statusColor }}; color: #000; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 6px;">
+                    <span style="background-color: {{ $statusColor }}; color: {{ $order->status === 'cancelled' ? '#fff' : '#000' }}; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 6px;">
                         {{ $order->status_label }}
                     </span>
+                    @if($order->status === 'cancelled' && $order->cancellation_reason)
+                        <div style="margin-top: 6px; font-size: 11px; color: #EF4444; font-weight: 600; max-width: 200px; line-height: 1.4;">
+                            <i class="fa-solid fa-quote-left" style="font-size: 8px; margin-right: 3px;"></i>
+                            {{ \Illuminate\Support\Str::limit($order->cancellation_reason, 80) }}
+                        </div>
+                    @endif
                 </td>
                 <td style="padding: 20px 10px; text-align: center;">
                     <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
@@ -81,6 +91,7 @@
                             "prov" => $order->shipping_province ?? "-",
                             "postal" => $order->shipping_zip ?? "-",
                             "shipping_method" => $order->delivery_service ?? "Standard",
+                            "receipt_number" => $order->receipt_number ?? "-",
                             "date" => $order->created_at->format("d-m-Y"),
                             "time" => $order->created_at->format("H:i"),
                             "items" => $order->items->map(fn($i) => ["name" => $i->product_name, "qty" => $i->quantity, "size" => $i->size])
@@ -101,7 +112,8 @@
             </tr>
             @endforeach
         </tbody>
-    </table>
+        </table>
+    </div>
 </div>
 
 
@@ -177,59 +189,54 @@
 </style>
 
 <!-- Order Print Modal -->
-<div id="printModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-    <div style="position: relative; max-height: 95vh; display: flex; flex-direction: column; align-items: center;">
+<div id="printModal" class="modal-container" style="display: none; background: rgba(0,0,0,0.8); overflow-y: auto;">
+    <div style="position: relative; min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 20px;">
         
         <!-- Close Button (Outside Paper) -->
-        <button onclick="closePrintModal()" class="no-print" style="position: absolute; right: -60px; top: 0; background: #fff; border: 2px solid #000; font-size: 24px; cursor: pointer; color: #000; width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000;">
+        <button onclick="closePrintModal()" class="no-print" style="position: absolute; right: 20px; top: 20px; background: #fff; border: 2px solid #000; font-size: 24px; cursor: pointer; color: #000; width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000; z-index: 1001;">
             <i class="fa-solid fa-xmark"></i>
         </button>
 
         <!-- The "Paper" Container -->
-        <div class="paper" style="background: #fff; width: 600px; border: 2px solid #000; box-shadow: 10px 10px 0px #000; padding: 40px; transform: scale(0.9); overflow-y: auto; border-radius: 4px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <span style="font-size: 28px; font-weight: 800; letter-spacing: 2px;">
+        <div class="paper" style="background: #fff; width: 100%; max-width: 480px; border: 2px solid #000; box-shadow: 10px 10px 0px #000; padding: 25px; overflow-y: visible; border-radius: 4px;">
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 15px;">
+                <span style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">
                     <span style="color: #000;">GEO</span><span style="color: #FFEA00;" class="logo-yellow">RYTHM</span>
                 </span>
             </div>
 
-            <div style="margin-bottom: 25px;">
-                <h4 style="font-size: 14px; color: #000; font-weight: 800; margin-bottom: 10px; text-transform: uppercase;">Shipping Address</h4>
-                <div style="border: 2px solid #000; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
-                    <div>
-                        <div style="font-weight: 700;">Indonesia</div>
-                        <div id="print_name" style="margin-top: 5px; font-weight: 800; font-size: 16px; text-transform: uppercase;">GEORYTHM CUSTOMER</div>
-                        <div id="print_telp" style="margin-top: 10px; font-weight: 700;">No Telp. -</div>
-                    </div>
-                    <div style="text-align: right;">
-                    </div>
-                    <div style="grid-column: span 2; margin-top: 10px; line-height: 1.4;">
-                        <div id="print_address" style="font-weight: 600;">Jl.Biru,RT03/RW06,No 20,Kel.Merah,Kec.Oren,Rainbow City</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 5px; font-weight: 600;">
-                             <div>No.<span id="print_no">20</span></div>
-                            <div>Province: <span id="print_prov">Gradasi</span></div>
-                            <div>City: <span id="print_city">Pelangi</span></div>
-                            <div>Zip Code: <span id="print_postal">11223</span></div>
-                        </div>
+            <div style="margin-bottom: 15px;">
+                <h4 style="font-size: 10px; color: #000; font-weight: 800; margin-bottom: 5px; text-transform: uppercase;">Shipping Address</h4>
+                <div style="border: 2px solid #000; padding: 10px; border-radius: 8px; font-size: 12px; line-height: 1.3;">
+                    <div id="print_name" style="font-weight: 800; font-size: 14px; text-transform: uppercase;">GEORYTHM CUSTOMER</div>
+                    <div id="print_telp" style="margin-top: 2px; font-weight: 700;">No Telp. -</div>
+                    <div id="print_address" style="margin-top: 5px; font-weight: 600;">Jl. Contoh Alamat No. 123</div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; border-top: 1px solid #eee; pt-2; padding-top: 5px;">
+                        <div>No. <span id="print_no">-</span></div>
+                        <div>Prov: <span id="print_prov">-</span></div>
+                        <div>City: <span id="print_city">-</span></div>
+                        <div>Zip: <span id="print_postal">-</span></div>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-bottom: 25px;">
-                <h4 style="font-size: 14px; color: #000; font-weight: 800; margin-bottom: 10px; text-transform: uppercase;">Order Items</h4>
-                <div id="print_items_container" style="border: 2px solid #000; padding: 15px; border-radius: 8px; font-size: 12px; max-height: 150px; overflow-y: auto;">
+            <div style="margin-bottom: 15px;">
+                <h4 style="font-size: 10px; color: #000; font-weight: 800; margin-bottom: 5px; text-transform: uppercase;">Order Items</h4>
+                <div id="print_items_container" style="border: 2px solid #000; padding: 10px; border-radius: 8px; font-size: 10px;">
                     <!-- Items will be injected here -->
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 0px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 2px solid #000; padding-top: 10px;">
                 <div>
-                    <h4 style="font-size: 14px; color: #000; font-weight: 800; margin-bottom: 5px; text-transform: uppercase;">Order Date</h4>
-                    <div id="print_date_time" style="font-size: 14px; font-weight: 700; color: #000;">15-2-2026 07.00</div>
+                    <h4 style="font-size: 9px; color: #666; font-weight: 800; margin-bottom: 2px; text-transform: uppercase;">Courier / Method</h4>
+                    <div id="print_shipping_method" style="font-size: 12px; font-weight: 800; color: #000;">STANDARD</div>
+                    <div style="font-size: 9px; color: #666; margin-top: 8px; font-weight: 700;">Date: <span id="print_date_time" style="color: #000;">-</span></div>
                 </div>
-                <div>
-                    <h4 style="font-size: 14px; color: #000; font-weight: 800; margin-bottom: 5px; text-transform: uppercase;">Shipping Method</h4>
-                    <div id="print_shipping_method" style="font-size: 14px; font-weight: 700; color: #000; text-transform: uppercase;">Standard</div>
+                <div style="text-align: right;">
+                    <h4 style="font-size: 9px; color: #666; font-weight: 800; margin-bottom: 2px; text-transform: uppercase;">Tracking Number</h4>
+                    <div id="print_receipt_number" style="font-size: 15px; font-weight: 800; color: #000; letter-spacing: 1px;">-</div>
                 </div>
             </div>
         </div>
@@ -260,8 +267,8 @@
 </div>
 
 <!-- Order Edit Modal -->
-<div id="editModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-    <div style="background: var(--bg-card); width: 450px; border-radius: 20px; position: relative; border: 2px solid var(--border-color); box-shadow: 10px 10px 0px var(--border-color); padding: 40px;">
+<div id="editModal" class="modal-container" style="display: none;">
+    <div class="modal-content">
         <button onclick="closeEditModal()" style="position: absolute; right: 20px; top: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-main);">
             <i class="fa-solid fa-xmark"></i>
         </button>
@@ -314,8 +321,8 @@
 </div>
 
 <!-- Order Shipping Modal -->
-<div id="shipModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-    <div style="background: #fff; width: 500px; border-radius: 20px; position: relative; border: 2px solid #000; padding: 60px; box-shadow: 10px 10px 0px #000;">
+<div id="shipModal" class="modal-container" style="display: none;">
+    <div class="modal-content">
         <button onclick="closeShipModal()" style="position: absolute; right: 20px; top: 20px; background: none; border: none; font-size: 32px; cursor: pointer; color: #000;">
             <i class="fa-solid fa-xmark"></i>
         </button>
@@ -422,6 +429,7 @@
         document.getElementById('print_postal').innerText = order.postal || '-';
         document.getElementById('print_date_time').innerText = order.date + ' ' + (order.time || '');
         document.getElementById('print_shipping_method').innerText = order.shipping_method || 'Standard';
+        document.getElementById('print_receipt_number').innerText = order.receipt_number || '-';
 
         const itemsContainer = document.getElementById('print_items_container');
         itemsContainer.innerHTML = '';

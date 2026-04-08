@@ -25,6 +25,9 @@
         }
     </script>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
     <!-- Global dark mode overrides — fixes all content pages at once -->
     <style>
         /* Text overrides */
@@ -96,11 +99,11 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="antialiased font-sans text-slate-900 bg-white dark:bg-zinc-950 dark:text-slate-100 selection:bg-yellow-400 selection:text-black transition-colors duration-300" x-data="{ cartOpen: false }">
+<body class="antialiased font-sans text-slate-900 bg-white dark:bg-zinc-900 dark:text-slate-100 selection:bg-yellow-400 selection:text-black transition-colors duration-300" x-data="{ cartOpen: false, mobileMenuOpen: false }">
     @include('customer.partials.header')
     @include('customer.partials.cart-drawer')
 
-    <main class="pt-32 pb-32 min-h-screen">
+    <main class="pt-20 pb-32 min-h-screen">
         @yield('content')
     </main>
 

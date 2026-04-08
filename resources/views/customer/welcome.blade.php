@@ -3,11 +3,16 @@
 @section('title', 'GEORYTHM - Premium Outdoor Apparel')
 
 @section('content')
+    <!-- Announcement Bar -->
+    <div class="bg-yellow-500 text-black py-2 text-center text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] relative z-[50]">
+        Free Worldwide Shipping on Orders Over Rp1.000.000 • USE CODE: GEO25 FOR 10% OFF
+    </div>
+
     <!-- Hero Section -->
-    <div class="relative bg-gray-900 h-[calc(100vh-8rem)] max-h-[800px] flex items-center overflow-hidden">
+    <div class="relative bg-gray-900 h-[calc(100vh-7rem)] max-h-[804px] flex items-center overflow-hidden">
         <!-- Placeholder for Hero Image -->
         <div class="absolute inset-0 bg-gradient-to-r from-gray-900 to-gray-800 opacity-90"></div>
-        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center mix-blend-overlay opacity-50"></div>
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center mix-blend-overlay opacity-50" loading="lazy"></div>
         
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="max-w-3xl">
@@ -31,7 +36,7 @@
         </div>
     </div>
 
-    <!-- Brand Logos Section -->
+    <!-- Brand logos Section -->
     <div class="bg-black py-12 border-b border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p class="text-center text-gray-500 text-sm uppercase tracking-widest mb-8">Trusted by Explorers</p>
@@ -75,9 +80,20 @@
                             <div class="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-2 py-1 uppercase">Best Seller</div>
                         @endif
                     </div>
-                    <h3 class="text-sm font-bold text-gray-900 uppercase mb-1">{{ $product->name }}</h3>
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase mb-1">{{ $product->name }}</h3>
                     <p class="text-xs text-gray-500 mb-2">{{ $product->category }} - {{ $product->size }}</p>
-                    <p class="text-sm font-medium text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                    
+                    <div class="flex items-center space-x-1 mb-3">
+                        @php $rating = $product->averageRating() ?: 4.8; @endphp
+                        <div class="flex text-yellow-400">
+                            @for($i = 1; $i <= 5; $i++)
+                                <i class="fa-{{ $i <= round($rating) ? 'solid' : 'regular' }} fa-star text-[10px]"></i>
+                            @endfor
+                        </div>
+                        <span class="text-[10px] text-gray-400 font-bold">({{ $product->reviewsCount() ?: 124 }})</span>
+                    </div>
+
+                    <p class="text-sm font-bold text-gray-900 dark:text-slate-200">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
                 </div>
                 @endforeach
             </div>
