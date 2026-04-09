@@ -51,9 +51,9 @@
 
         <!-- Product info -->
         <div class="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900 uppercase">{{ $product->name }}</h1>
-                <p class="text-2xl font-medium text-gray-900">{{ $product->formatted_price }}</p>
+            <div class="mb-4">
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white uppercase">{{ $product->name }}</h1>
+                <p class="text-2xl font-medium text-gray-900 dark:text-slate-300 mt-2">{{ $product->formatted_price }}</p>
             </div>
 
             <div class="mb-6">

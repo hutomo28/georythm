@@ -12,7 +12,7 @@
     <!-- Order List -->
     <div class="max-w-4xl mx-auto space-y-16">
 @forelse($orders as $order)
-            <div class="border border-gray-200 p-8 shadow-sm bg-white relative" x-data="{ localUploadModalOpen: false, localCancelModalOpen: false }">
+            <div class="border border-gray-200 p-8 shadow-sm bg-white relative" x-data="{ localUploadModalOpen: false, localCancelModalOpen: false, localReviewModalOpen: false }">
                 <!-- Order Header Info -->
                 <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
                     <div>
@@ -138,13 +138,18 @@
                                     <span x-show="copied" x-cloak class="text-[10px] text-green-500 font-bold uppercase tracking-widest">OK!</span>
                                 </button>
                             </div>
-                            <div class="flex space-x-3">
-                                <a href="{{ $order->tracking_link ?? '#' }}" target="_blank" class="flex items-center space-x-3 border-2 border-black text-black px-6 py-3 font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white transition-all transition-all duration-300">
+                            <div class="flex space-x-3 mt-4">
+                                <a href="{{ $order->tracking_link ?? '#' }}" target="_blank" class="flex items-center space-x-3 border-2 border-black text-black px-6 py-3 font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white transition-all duration-300">
                                     {{ __('customer.track_order') }}
                                 </a>
+                                <button @click="localReviewModalOpen = true" class="bg-black text-white px-8 py-3 font-bold text-[10px] uppercase tracking-widest border-2 border-black hover:bg-white hover:text-black transition-all duration-300">
+                                    {{ __('customer.confirm_received') }}
+                                </button>
                             </div>
                         @elseif($status === 'arrived')
-                            {{-- Button removed as per user request --}}
+                            <button @click="localReviewModalOpen = true" class="bg-black text-white px-10 py-5 font-black text-[11px] uppercase tracking-[0.2em] border-2 border-black hover:bg-white hover:text-black transition-all duration-300 shadow-[6px_6px_0px_#000] hover:shadow-none translate-x-[-3px] translate-y-[-3px] hover:translate-x-0 hover:translate-y-0 active:scale-95">
+                                {{ __('customer.confirm_received') }}
+                            </button>
                         @elseif($status === 'completed')
                             <a href="{{ route('order.review', $order->id) }}" class="bg-black text-white px-8 py-3 font-bold text-[10px] uppercase tracking-widest border-2 border-black hover:bg-white hover:text-black transition-all duration-300">
                                 {{ __('customer.give_review') }}
@@ -369,6 +374,79 @@
                         </div>
                     </div>
                 </template>
+                
+                <!-- Rating & Review Modal -->
+                <template x-if="localReviewModalOpen">
+                    <div class="fixed inset-0 z-[110] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                        <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                            class="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity" @click="localReviewModalOpen = false"></div>
+                        <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
+                            <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                class="relative transform overflow-hidden bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-3xl border-2 border-black">
+                                <div class="bg-black px-6 py-4 flex justify-between items-center">
+                                    <h3 class="text-sm font-bold text-white uppercase tracking-[0.2em] leading-6">Complete & Review Order</h3>
+                                    <button @click="localReviewModalOpen = false" class="text-white hover:text-yellow-500 transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                </div>
+                                
+                                <div class="px-8 py-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                                    <div class="mb-10 text-center">
+                                        <div class="inline-block px-4 py-1 bg-yellow-400 text-[10px] font-black uppercase tracking-widest mb-4">Final Step</div>
+                                        <p class="text-xl font-bold text-gray-900 uppercase tracking-tight">How was your experience?</p>
+                                        <p class="text-xs text-gray-500 mt-2 font-medium">Your feedback helps us and other explorers.</p>
+                                    </div>
+
+                                    <form action="{{ route('order.review.store', $order->id) }}" method="POST" class="space-y-10">
+                                        @csrf
+                                        @foreach($order->items as $item)
+                                        <div class="bg-gray-50/50 p-6 border border-gray-100" x-data="{ rating: 5, hover: 0 }">
+                                            <div class="flex items-center space-x-4 mb-6">
+                                                <div class="w-12 h-16 bg-white border border-gray-100 overflow-hidden flex-shrink-0">
+                                                    <img src="{{ $item->product ? $item->product->image : 'https://placehold.co/600x800/f3f4f6/000000?text=DEL' }}" class="w-full h-full object-cover">
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <h4 class="text-xs font-bold text-gray-900 uppercase truncate mb-1">{{ $item->product_name }}</h4>
+                                                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{{ $item->size }}</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="space-y-6">
+                                                <input type="hidden" name="ratings[{{ $item->product_id }}]" x-model="rating">
+                                                <div class="flex items-center justify-center space-x-2 bg-white py-3 border border-gray-100 shadow-sm rounded-full max-w-[200px] mx-auto">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <button type="button" 
+                                                            @click="rating = {{ $i }}" 
+                                                            @mouseenter="hover = {{ $i }}" 
+                                                            @mouseleave="hover = 0"
+                                                            class="focus:outline-none transition-transform hover:scale-125">
+                                                            <i class="fa-star text-lg" 
+                                                               :class="(hover || rating) >= {{ $i }} ? 'fa-solid text-yellow-500' : 'fa-regular text-gray-200'"></i>
+                                                        </button>
+                                                    @endfor
+                                                </div>
+                                                <textarea name="comments[{{ $item->product_id }}]" rows="2" 
+                                                    class="block w-full border-2 border-gray-100 bg-white px-4 py-3 text-xs focus:border-black focus:ring-0 transition-all placeholder-gray-300 font-medium resize-none uppercase"
+                                                    placeholder="Small review? (Optional)"></textarea>
+                                            </div>
+                                        </div>
+                                        @endforeach
+
+                                        <div class="pt-6">
+                                            <button type="submit" class="w-full bg-black border-2 border-black text-white py-4 font-bold uppercase tracking-widest text-[11px] hover:bg-white hover:text-black transition-all duration-300 shadow-[6px_6px_0px_rgba(0,0,0,0.1)]">
+                                                Complete Order & Post Review
+                                            </button>
+                                            
+                                            <!-- Just complete button -->
+                                            <button type="submit" name="skip_review" value="1" class="w-full mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors py-2">
+                                                Just Complete Order (Skip Rating)
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
         @empty
             <div class="py-20 text-center">

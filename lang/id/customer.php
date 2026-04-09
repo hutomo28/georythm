@@ -4,7 +4,7 @@ return [
     'all_products' => 'Semua Produk',
     'natgeo' => 'National Geographic',
     'tnf' => 'The North Face',
-    'arcteryx' => 'Arcteryx',
+    'arcteryx' => 'Arc\'teryx',
     'columbia' => 'Columbia',
     'about_us' => 'Tentang Kami',
     'lookbook' => 'Lookbook',
@@ -38,5 +38,6 @@ return [
     'shipped_status' => 'Dalam Pengiriman',
     'arrived_status' => 'Pesanan Tiba',
     'completed_status' => 'Selesai',
+    'confirm_received' => 'Pesanan Selesai',
     'cancelled_status' => 'Dibatalkan',
 ];

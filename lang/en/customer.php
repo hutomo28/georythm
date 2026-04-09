@@ -4,7 +4,7 @@ return [
     'all_products' => 'All Products',
     'natgeo' => 'National Geographic',
     'tnf' => 'The North Face',
-    'arcteryx' => 'Arcteryx',
+    'arcteryx' => 'Arc\'teryx',
     'columbia' => 'Columbia',
     'about_us' => 'Our Story',
     'lookbook' => 'Lookbook',
@@ -38,5 +38,6 @@ return [
     'shipped_status' => 'Shipped',
     'arrived_status' => 'Arrived',
     'completed_status' => 'Completed',
+    'confirm_received' => 'Complete Order',
     'cancelled_status' => 'Cancelled',
 ];

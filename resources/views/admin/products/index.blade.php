@@ -445,7 +445,7 @@
                         <option value="National Geographic">National Geographic</option>
                         <option value="The North Face">The North Face</option>
                         <option value="Columbia">Columbia</option>
-                        <option value="Arcteryx">Arcteryx</option>
+                        <option value="Arc'teryx">Arc'teryx</option>
                     </select>
                     <i class="fa-solid fa-chevron-down" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 12px; color: var(--text-main);"></i>
                 </div>

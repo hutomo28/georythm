@@ -163,16 +163,16 @@
                     All Products
                 </a>
                 <a href="{{ route('products.index', ['category' => 'natgeo']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
-                    NatGeo
+                    {{ __('customer.natgeo') }}
                 </a>
                 <a href="{{ route('products.index', ['category' => 'tnf']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
-                    TNF
+                    {{ __('customer.tnf') }}
                 </a>
                 <a href="{{ route('products.index', ['category' => 'arcteryx']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
-                    Arcteryx
+                    {{ __('customer.arcteryx') }}
                 </a>
                 <a href="{{ route('products.index', ['category' => 'columbia']) }}" class="block text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-slate-100 hover:text-yellow-500 transition-colors">
-                    Columbia
+                    {{ __('customer.columbia') }}
                 </a>
                 <div class="pt-6 border-t border-gray-100 dark:border-zinc-800 space-y-4">
                     <a href="{{ route('cart.index') }}" class="block text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400 hover:text-yellow-500 transition-colors">

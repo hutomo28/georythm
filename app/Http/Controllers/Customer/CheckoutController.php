@@ -30,35 +30,8 @@ class CheckoutController extends Controller
             return ($item->product->price ?? 0) * $item->quantity;
         });
 
-        // Calculate dynamic shipping (Province-based)
-        $shipping = 0;
-        if ($address) {
-            $province = strtolower($address->province);
-            $isJawaBarat = str_contains($province, 'jawa barat') || str_contains($province, 'west java');
-
-            $otherJava = [
-                'jakarta', 'dki jakarta', 'banten',
-                'jawa tengah', 'central java',
-                'jawa timur', 'east java',
-                'yogyakarta', 'di yogyakarta',
-            ];
-
-            $isOtherJava = false;
-            foreach ($otherJava as $pj) {
-                if (str_contains($province, $pj)) {
-                    $isOtherJava = true;
-                    break;
-                }
-            }
-
-            if ($isJawaBarat) {
-                $shipping = 14000;
-            } elseif ($isOtherJava) {
-                $shipping = 22000; // 14k + 8k
-            } else {
-                $shipping = 39000; // 14k + 25k
-            }
-        }
+        // Calculate dynamic shipping
+        $shipping = $this->getShippingCost($address);
 
         $total = $subtotal + $shipping;
 
@@ -86,32 +59,8 @@ class CheckoutController extends Controller
             return ($item->product->price ?? 0) * $item->quantity;
         });
 
-        // Calculate dynamic shipping (Province-based)
-        $province = strtolower($address->province);
-        $isJawaBarat = str_contains($province, 'jawa barat') || str_contains($province, 'west java');
-
-        $otherJava = [
-            'jakarta', 'dki jakarta', 'banten',
-            'jawa tengah', 'central java',
-            'jawa timur', 'east java',
-            'yogyakarta', 'di yogyakarta',
-        ];
-
-        $isOtherJava = false;
-        foreach ($otherJava as $pj) {
-            if (str_contains($province, $pj)) {
-                $isOtherJava = true;
-                break;
-            }
-        }
-
-        if ($isJawaBarat) {
-            $shipping = 14000;
-        } elseif ($isOtherJava) {
-            $shipping = 22000; // 14k + 8k
-        } else {
-            $shipping = 39000; // 14k + 25k
-        }
+        // Calculate dynamic shipping
+        $shipping = $this->getShippingCost($address);
 
         $total = $subtotal + $shipping;
 
@@ -193,5 +142,61 @@ class CheckoutController extends Controller
 
             return redirect()->route('order.status', ['status' => 'waiting-payment'])->with('success', 'Order placed successfully!');
         });
+    }
+
+    /**
+     * Helper to calculate shipping cost based on country and province.
+     */
+    private function getShippingCost($address)
+    {
+        if (! $address) {
+            return 0;
+        }
+
+        $country = strtolower($address->country);
+        
+        // If Country is Indonesia or empty
+        if ($country === 'indonesia' || empty($country)) {
+            $province = strtolower($address->province);
+            $isJawaBarat = str_contains($province, 'jawa barat') || str_contains($province, 'west java');
+
+            $otherJava = [
+                'jakarta', 'dki jakarta', 'banten',
+                'jawa tengah', 'central java',
+                'jawa timur', 'east java',
+                'yogyakarta', 'di yogyakarta',
+            ];
+
+            $isOtherJava = false;
+            foreach ($otherJava as $pj) {
+                if (str_contains($province, $pj)) {
+                    $isOtherJava = true;
+                    break;
+                }
+            }
+
+            if ($isJawaBarat) {
+                return 14000;
+            } elseif ($isOtherJava) {
+                return 22000; 
+            } else {
+                return 39000;
+            }
+        }
+
+        // ASEAN Countries (Excluding Indonesia)
+        $asean = [
+            'malaysia', 'singapore', 'thailand', 'philippines', 'vietnam', 
+            'myanmar', 'laos', 'cambodia', 'brunei', 'timor-leste', 'timor leste'
+        ];
+
+        foreach ($asean as $c) {
+            if (str_contains($country, $c)) {
+                return 120000; // 120k for ASEAN
+            }
+        }
+
+        // Rest of the World
+        return 300000; // 300k for outside ASEAN
     }
 }

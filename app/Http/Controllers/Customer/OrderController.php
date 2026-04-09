@@ -45,7 +45,7 @@ class OrderController extends Controller
     {
         $request->validate([
             'sender_name' => 'required|string|max:255',
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'payment_proof' => 'required|file|mimes:jpeg,png,jpg,webp,avif,gif,bmp,tiff,svg|max:2048',
         ]);
 
         if ($request->hasFile('payment_proof')) {
@@ -137,8 +137,8 @@ class OrderController extends Controller
             abort(403);
         }
 
-        if ($order->status !== 'completed') {
-            return redirect()->route('order.status', ['status' => $order->status]);
+        if (!in_array($order->status, ['shipped', 'arrived', 'completed'])) {
+            return redirect()->route('order.status', ['status' => $order->status])->with('error', 'Reviews can only be submitted for shipped or delivered orders.');
         }
 
         $order->load('items.product');
@@ -155,28 +155,35 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $request->validate([
-            'ratings' => 'required|array',
-            'ratings.*' => 'required|integer|min:1|max:5',
-            'comments' => 'nullable|array',
-            'comments.*' => 'nullable|string',
-        ]);
+        if (!$request->has('skip_review')) {
+            $request->validate([
+                'ratings' => 'required|array',
+                'ratings.*' => 'required|integer|min:1|max:5',
+                'comments' => 'nullable|array',
+                'comments.*' => 'nullable|string',
+            ]);
 
-        foreach ($order->items as $item) {
-            if (isset($request->ratings[$item->product_id])) {
-                Review::updateOrCreate(
-                    [
-                        'user_id' => Auth::id(),
-                        'product_id' => $item->product_id,
-                    ],
-                    [
-                        'rating' => $request->ratings[$item->product_id],
-                        'comment' => $request->comments[$item->product_id] ?? null,
-                    ]
-                );
+            foreach ($order->items as $item) {
+                if (isset($request->ratings[$item->product_id])) {
+                    Review::updateOrCreate(
+                        [
+                            'user_id' => Auth::id(),
+                            'product_id' => $item->product_id,
+                        ],
+                        [
+                            'rating' => $request->ratings[$item->product_id],
+                            'comment' => $request->comments[$item->product_id] ?? null,
+                        ]
+                    );
+                }
             }
         }
 
-        return redirect()->route('order.status', ['status' => 'completed'])->with('success', 'Thank you for your review!');
+        // Automatically complete the order if it wasn't already
+        if ($order->status !== 'completed') {
+            $order->update(['status' => 'completed']);
+        }
+
+        return redirect()->route('order.status', ['status' => 'completed'])->with('success', 'Thank you! Your order is now completed and your feedback has been shared.');
     }
 }

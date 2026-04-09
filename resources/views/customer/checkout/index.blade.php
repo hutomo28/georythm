@@ -61,8 +61,20 @@
                             <div class="flex items-center">
                                 <input type="radio" name="shipping_method" value="JNE" class="h-4 w-4 text-black border-gray-300 focus:ring-black" checked>
                                 <div class="ml-4">
-                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">JNE Express</span>
-                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">3 to 6 working days</span>
+                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">
+                                        @if($address && strtolower($address->country) !== 'indonesia')
+                                            DHL Express
+                                        @else
+                                            JNE Express
+                                        @endif
+                                    </span>
+                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">
+                                        @if($address && strtolower($address->country) !== 'indonesia')
+                                            3 to 6 working days
+                                        @else
+                                            3 to 6 working days
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
                             <span class="text-sm font-bold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
@@ -73,8 +85,20 @@
                             <div class="flex items-center">
                                 <input type="radio" name="shipping_method" value="JNT" class="h-4 w-4 text-black border-gray-300 focus:ring-black">
                                 <div class="ml-4">
-                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">J&T Express</span>
-                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">2 to 4 working days</span>
+                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">
+                                        @if($address && strtolower($address->country) !== 'indonesia')
+                                            Lion Parcel International
+                                        @else
+                                            J&T Express
+                                        @endif
+                                    </span>
+                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">
+                                        @if($address && strtolower($address->country) !== 'indonesia')
+                                            5 to 10 working days
+                                        @else
+                                            2 to 4 working days
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
                             <span class="text-sm font-bold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
@@ -85,8 +109,20 @@
                             <div class="flex items-center">
                                 <input type="radio" name="shipping_method" value="ANTERAJA" class="h-4 w-4 text-black border-gray-300 focus:ring-black">
                                 <div class="ml-4">
-                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">Anteraja</span>
-                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">2 to 5 working days</span>
+                                    <span class="block text-sm font-bold text-gray-900 uppercase tracking-tight">
+                                        @if($address && strtolower($address->country) !== 'indonesia')
+                                            FedEx Global
+                                        @else
+                                            Anteraja
+                                        @endif
+                                    </span>
+                                    <span class="block text-[10px] text-gray-500 uppercase font-medium">
+                                        @if($address && strtolower($address->country) !== 'indonesia')
+                                            4 to 8 working days
+                                        @else
+                                            2 to 5 working days
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
                             <span class="text-sm font-bold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>

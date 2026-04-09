@@ -139,7 +139,7 @@ class AdminController extends Controller
             'sizes' => 'required|array',
             'sizes.*' => 'required|integer|min:0',
             'images' => 'required|array|min:1|max:3',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images.*' => 'file|mimes:jpeg,png,jpg,webp,avif,gif,bmp,tiff,svg|max:2048',
         ]);
 
         $totalStock = array_sum($request->sizes);
@@ -241,9 +241,9 @@ class AdminController extends Controller
             'sizes' => 'required|array',
             'sizes.*' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'image_slot_1' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'image_slot_2' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'image_slot_3' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image_slot_1' => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,bmp,tiff,svg|max:2048',
+            'image_slot_2' => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,bmp,tiff,svg|max:2048',
+            'image_slot_3' => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,bmp,tiff,svg|max:2048',
         ]);
 
         $product = \App\Models\Product::findOrFail($id);
